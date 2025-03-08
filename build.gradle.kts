@@ -2,32 +2,24 @@ plugins {
     java
 }
 
-group = "org.example"
-version = "1.0-SNAPSHOT"
+allprojects {
+    plugins.apply("java")
 
-repositories {
-    mavenCentral()
-}
+    group = "org.example"
+    version = "1.0-SNAPSHOT"
 
-dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
-}
+    repositories {
+        mavenCentral()
+    }
 
-tasks.named<Test>("test") {
-    useJUnitPlatform()
-}
+    tasks.register<Javadoc>("genDocs") {
+        source = sourceSets.main.get().allJava
+        options.memberLevel = JavadocMemberLevel.PUBLIC
+        options.encoding = "UTF-8"
+        isFailOnError = false
+    }
 
-tasks.register<JavaExec>("consoleApp") {
-    mainClass.set("org.example.ConsoleApp")
-    classpath = sourceSets["main"].runtimeClasspath
-    standardInput = System.`in`
-
-    dependsOn(":genDocs")
-}
-
-tasks.register<Javadoc>("genDocs") {
-    source = sourceSets["main"].allJava
-    options.memberLevel = JavadocMemberLevel.PUBLIC
-    isFailOnError = false
+    tasks.build {
+        dependsOn(tasks.named("genDocs"))
+    }
 }

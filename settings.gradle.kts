@@ -1,2 +1,2 @@
-rootProject.name = "PressStart9"
-
+include("petproject")
+include("cashmachine")
