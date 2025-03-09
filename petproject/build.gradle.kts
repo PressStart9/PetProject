@@ -10,8 +10,27 @@ dependencies {
 
     testCompileOnly("org.projectlombok:lombok:1.18.36")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.36")
+
+    implementation("org.postgresql:postgresql:42.7.5")
 }
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
+}
+
+tasks.register<JavaExec>("runApplication") {
+    mainClass.set("org.example.DbApp")
+    classpath = sourceSets.main.get().runtimeClasspath
+}
+
+tasks.register<Exec>("dockerCompose") {
+    commandLine("docker-compose", "up", "--build")
+
+    environment["POSTGRES_DB"] = System.getenv("POSTGRES_DB")
+    environment["POSTGRES_PORT"] = System.getenv("POSTGRES_PORT")
+    environment["POSTGRES_PASSWORD"] = System.getenv("POSTGRES_PASSWORD")
+    environment["POSTGRES_USER"] = System.getenv("POSTGRES_USER")
+
+    environment["PGADMIN_DEFAULT_PASSWORD"] = System.getenv("PGADMIN_DEFAULT_PASSWORD")
+    environment["PGADMIN_DEFAULT_EMAIL"] = System.getenv("PGADMIN_DEFAULT_EMAIL")
 }
