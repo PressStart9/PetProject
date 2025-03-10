@@ -1,4 +1,4 @@
-package org.example;
+package org.example.entities;
 
 public enum AvailableColor {
     Black,

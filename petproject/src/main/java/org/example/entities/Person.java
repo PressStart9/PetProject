@@ -1,4 +1,4 @@
-package org.example;
+package org.example.entities;
 
 import jakarta.persistence.*;
 
@@ -13,6 +13,6 @@ public class Person {
     private String name;
     private Date date;
 
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
     private List<Pet> pets;
 }
