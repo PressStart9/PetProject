@@ -20,9 +20,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DaoFactory {
-    private static DaoFactory instance;
+    public static final String DEFAULT_POSTGRES_USER = "postgres";
+    public static final String DEFAULT_POSTGRES_PASSWORD = "postgres";
+    public static final String DEFAULT_POSTGRES_PORT = "5432";
+    public static final String DEFAULT_POSTGRES_DB = "PetProjectDB";
+    public static final String DEFAULT_PGADMIN_DEFAULT_EMAIL = "postgres@postgres.com";
+    public static final String DEFAULT_PGADMIN_DEFAULT_PASSWORD = "postgres";
     public static final String PERSISTENCE_UNIT_NAME = "petproject.jpa";
 
+    @Getter
     private final EntityManagerFactory entityManagerFactory;
 
     @Getter
@@ -30,16 +36,16 @@ public class DaoFactory {
     @Getter
     private final PersonRepository personRepository;
 
-    private Configuration makeConfig() {
-        final String jakartaJdbcUrl = "jdbc:postgresql://localhost:" + System.getenv("POSTGRES_PORT") + "/" + System.getenv("POSTGRES_DB");
+    private static Configuration makeConfig(String user, String password, String port, String db) {
+        final String jakartaJdbcUrl = "jdbc:postgresql://localhost:" + port + "/" + db;
 
         Configuration cfg = new Configuration();
         cfg.setProperty(AvailableSettings.PERSISTENCE_UNIT_NAME, PERSISTENCE_UNIT_NAME);
         cfg.setProperty(AvailableSettings.JTA_PLATFORM, "org.hibernate.service.jta.platform.internal.JBossAppServerJtaPlatform");
         cfg.setProperty(AvailableSettings.JAKARTA_JDBC_DRIVER, "org.postgresql.Driver");
         cfg.setProperty(AvailableSettings.JAKARTA_JDBC_URL, jakartaJdbcUrl);
-        cfg.setProperty(AvailableSettings.JAKARTA_JDBC_USER, System.getenv("POSTGRES_USER"));
-        cfg.setProperty(AvailableSettings.JAKARTA_JDBC_PASSWORD, System.getenv("POSTGRES_PASSWORD"));
+        cfg.setProperty(AvailableSettings.JAKARTA_JDBC_USER, user);
+        cfg.setProperty(AvailableSettings.JAKARTA_JDBC_PASSWORD, password);
 
         cfg.setProperty(AvailableSettings.HBM2DDL_AUTO, Action.ACTION_UPDATE);
 
@@ -54,22 +60,24 @@ public class DaoFactory {
     }
 
     public DaoFactory() {
+        this(
+            System.getenv("POSTGRES_USER") != null ? System.getenv("POSTGRES_USER") : DEFAULT_POSTGRES_USER,
+            System.getenv("POSTGRES_PASSWORD") != null ? System.getenv("POSTGRES_PASSWORD") : DEFAULT_POSTGRES_PASSWORD,
+            System.getenv("POSTGRES_PORT") != null ? System.getenv("POSTGRES_PORT") : DEFAULT_POSTGRES_PORT,
+            System.getenv("POSTGRES_DB") != null ? System.getenv("POSTGRES_DB") : DEFAULT_POSTGRES_DB
+        );
+    }
+
+    public DaoFactory(String postgresUser, String postgresPassword, String postgresPort, String postgresDb) {
         Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
 
-        val sessionFactory = makeConfig().buildSessionFactory();
+        val sessionFactory = makeConfig(postgresUser, postgresPassword, postgresPort, postgresDb).buildSessionFactory();
         Session session = sessionFactory.openSession();
         entityManagerFactory = session.getEntityManagerFactory();
         session.close();
 
-        petRepository = new PetRepository(entityManagerFactory.createEntityManager());
-        personRepository = new PersonRepository(entityManagerFactory.createEntityManager());
-    }
-
-    public static DaoFactory get() {
-        if (instance == null) {
-            instance = new DaoFactory();
-        }
-        return instance;
+        petRepository = new PetRepository(this);
+        personRepository = new PersonRepository(this);
     }
 
     public void inTransaction(Consumer<EntityManager> work) {

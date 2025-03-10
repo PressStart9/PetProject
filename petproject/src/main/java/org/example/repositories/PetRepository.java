@@ -6,20 +6,25 @@ import jakarta.persistence.PersistenceContextType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaQuery;
-import lombok.RequiredArgsConstructor;
 import org.example.DaoFactory;
 import org.example.entities.Pet;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 public class PetRepository implements IRepository<Pet> {
     @PersistenceContext(unitName = DaoFactory.PERSISTENCE_UNIT_NAME, type = PersistenceContextType.TRANSACTION)
     private final EntityManager entityManager;
 
+    private final DaoFactory daoFactory;
+
+    public PetRepository(DaoFactory daoFactory) {
+        this.daoFactory = daoFactory;
+        this.entityManager = daoFactory.getEntityManagerFactory().createEntityManager();
+    }
+
     @Override
     public Pet save(Pet entity) {
-        DaoFactory.get().inTransaction(entityManager -> {
+        daoFactory.inTransaction(entityManager -> {
            entityManager.persist(entity);
         });
 
@@ -33,14 +38,14 @@ public class PetRepository implements IRepository<Pet> {
 
     @Override
     public void deleteByEntity(Pet entity) {
-        DaoFactory.get().inTransaction(entityManager -> {
+        daoFactory.inTransaction(entityManager -> {
             entityManager.remove(entity);
         });
     }
 
     @Override
     public void deleteAll() {
-        DaoFactory.get().inTransaction(entityManager -> {
+        daoFactory.inTransaction(entityManager -> {
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();
             CriteriaDelete<Pet> cq = cb.createCriteriaDelete(Pet.class);
 
@@ -50,7 +55,7 @@ public class PetRepository implements IRepository<Pet> {
 
     @Override
     public Pet update(Pet entity) {
-        return DaoFactory.get().inTransaction(entityManager -> {
+        return daoFactory.inTransaction(entityManager -> {
             return entityManager.merge(entity);
         });
     }
