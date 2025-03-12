@@ -1,13 +1,15 @@
 package org.example.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity @Table(name = "Pets")
-@NoArgsConstructor @AllArgsConstructor
-@Getter
+@NoArgsConstructor
+@Getter @Setter
+@EqualsAndHashCode
 public class Pet {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,6 +20,11 @@ public class Pet {
     @Enumerated
     private AvailableColor color;
 
-    @ManyToOne
+    @EqualsAndHashCode.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
     private Person owner;
+
+    @EqualsAndHashCode.Exclude
+    @ManyToMany(fetch = FetchType.LAZY)
+    private Set<Pet> friends = new HashSet<>();
 }

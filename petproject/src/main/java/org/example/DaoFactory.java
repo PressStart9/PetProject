@@ -36,7 +36,7 @@ public class DaoFactory {
     @Getter
     private final PersonRepository personRepository;
 
-    private static Configuration makeConfig(String user, String password, String port, String db) {
+    private static Configuration makeConfig(String user, String password, String port, String db, boolean silent) {
         final String jakartaJdbcUrl = "jdbc:postgresql://localhost:" + port + "/" + db;
 
         Configuration cfg = new Configuration();
@@ -49,9 +49,9 @@ public class DaoFactory {
 
         cfg.setProperty(AvailableSettings.HBM2DDL_AUTO, Action.ACTION_UPDATE);
 
-        cfg.setProperty(AvailableSettings.SHOW_SQL, false);
-        cfg.setProperty(AvailableSettings.FORMAT_SQL, false);
-        cfg.setProperty(AvailableSettings.HIGHLIGHT_SQL, false);
+        cfg.setProperty(AvailableSettings.SHOW_SQL, !silent);
+        cfg.setProperty(AvailableSettings.FORMAT_SQL, !silent);
+        cfg.setProperty(AvailableSettings.HIGHLIGHT_SQL, !silent);
 
         cfg.addAnnotatedClass(Pet.class);
         cfg.addAnnotatedClass(Person.class);
@@ -61,17 +61,34 @@ public class DaoFactory {
 
     public DaoFactory() {
         this(
+            true
+        );
+    }
+
+    public DaoFactory(boolean silent) {
+        this(
             System.getenv("POSTGRES_USER") != null ? System.getenv("POSTGRES_USER") : DEFAULT_POSTGRES_USER,
             System.getenv("POSTGRES_PASSWORD") != null ? System.getenv("POSTGRES_PASSWORD") : DEFAULT_POSTGRES_PASSWORD,
             System.getenv("POSTGRES_PORT") != null ? System.getenv("POSTGRES_PORT") : DEFAULT_POSTGRES_PORT,
-            System.getenv("POSTGRES_DB") != null ? System.getenv("POSTGRES_DB") : DEFAULT_POSTGRES_DB
+            System.getenv("POSTGRES_DB") != null ? System.getenv("POSTGRES_DB") : DEFAULT_POSTGRES_DB,
+            silent
         );
     }
 
     public DaoFactory(String postgresUser, String postgresPassword, String postgresPort, String postgresDb) {
-        Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
+        this(
+            postgresUser,
+            postgresPassword,
+            postgresPort,
+            postgresDb,
+            true
+        );
+    }
 
-        val sessionFactory = makeConfig(postgresUser, postgresPassword, postgresPort, postgresDb).buildSessionFactory();
+    public DaoFactory(String postgresUser, String postgresPassword, String postgresPort, String postgresDb, boolean silent) {
+        Logger.getLogger("org.hibernate").setLevel(silent ? Level.SEVERE : Level.ALL);
+
+        val sessionFactory = makeConfig(postgresUser, postgresPassword, postgresPort, postgresDb, silent).buildSessionFactory();
         Session session = sessionFactory.openSession();
         entityManagerFactory = session.getEntityManagerFactory();
         session.close();

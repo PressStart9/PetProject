@@ -12,6 +12,13 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:1.18.36")
 
     implementation("org.postgresql:postgresql:42.7.5")
+
+    testImplementation("org.testcontainers:testcontainers:1.20.6")
+
+    implementation(platform("org.testcontainers:testcontainers-bom:1.20.6"))
+    testImplementation("org.testcontainers:postgresql")
+
+    testImplementation("ch.qos.logback:logback-classic:1.2.11")
 }
 
 tasks.named<Test>("test") {

@@ -8,38 +8,37 @@ import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaQuery;
 import org.example.DaoFactory;
 import org.example.entities.Person;
+import org.example.entities.Pet;
 
 import java.util.List;
 
 public class PersonRepository implements IRepository<Person> {
-    @PersistenceContext(unitName = DaoFactory.PERSISTENCE_UNIT_NAME, type = PersistenceContextType.TRANSACTION)
-    private final EntityManager entityManager;
-
     private final DaoFactory daoFactory;
 
     public PersonRepository(DaoFactory daoFactory) {
         this.daoFactory = daoFactory;
-        this.entityManager = daoFactory.getEntityManagerFactory().createEntityManager();
     }
 
     @Override
     public Person save(Person entity) {
-        daoFactory.inTransaction(entityManager -> {
+        return daoFactory.inTransaction(entityManager -> {
             entityManager.persist(entity);
+            return entity;
         });
-
-        return entity;
     }
 
     @Override
     public void deleteById(long id) {
-        deleteByEntity(getById(id));
+        Person entity = getById(id);
+        if (entity != null) {
+            deleteByEntity(entity);
+        }
     }
 
     @Override
     public void deleteByEntity(Person entity) {
         daoFactory.inTransaction(entityManager -> {
-            entityManager.remove(entity);
+            entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
         });
     }
 
@@ -49,7 +48,7 @@ public class PersonRepository implements IRepository<Person> {
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();
             CriteriaDelete<Person> cq = cb.createCriteriaDelete(Person.class);
 
-            entityManager.createQuery(cq);
+            entityManager.createQuery(cq).executeUpdate();
         });
     }
 
@@ -62,15 +61,18 @@ public class PersonRepository implements IRepository<Person> {
 
     @Override
     public Person getById(long id) {
-        return entityManager.find(Person.class, id);
+        return daoFactory.inTransaction(entityManager -> {
+            return entityManager.find(Person.class, id);
+        });
     }
 
     @Override
     public List<Person> getAll() {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Person> cq = cb.createQuery(Person.class);
-        cq.from(Person.class);
-
-        return entityManager.createQuery(cq).getResultList();
+        return daoFactory.inTransaction(entityManager -> {
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Person> cq = cb.createQuery(Person.class);
+            cq.from(Person.class);
+            return entityManager.createQuery(cq).getResultList();
+        });
     }
 }

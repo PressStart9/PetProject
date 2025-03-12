@@ -1,18 +1,25 @@
 package org.example.entities;
 
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity @Table(name = "People")
+@Getter @Setter
+@EqualsAndHashCode
 public class Person {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
-    private Date date;
+    private Date birthdate;
 
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
-    private List<Pet> pets;
+    private Set<Pet> pets = new HashSet<>();
 }
