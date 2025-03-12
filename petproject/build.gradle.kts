@@ -28,6 +28,8 @@ tasks.named<Test>("test") {
 tasks.register<JavaExec>("runApplication") {
     mainClass.set("org.example.DbApp")
     classpath = sourceSets.main.get().runtimeClasspath
+
+    dependsOn(tasks.named("genDocs"))
 }
 
 tasks.register<Exec>("dockerCompose") {

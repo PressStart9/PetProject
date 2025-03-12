@@ -11,15 +11,15 @@ import java.util.Set;
 
 @Entity @Table(name = "People")
 @Getter @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Person {
+    @EqualsAndHashCode.Include
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
     private Date birthdate;
 
-    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
     private Set<Pet> pets = new HashSet<>();
 }

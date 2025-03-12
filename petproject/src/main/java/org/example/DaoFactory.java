@@ -24,8 +24,6 @@ public class DaoFactory {
     public static final String DEFAULT_POSTGRES_PASSWORD = "postgres";
     public static final String DEFAULT_POSTGRES_PORT = "5432";
     public static final String DEFAULT_POSTGRES_DB = "PetProjectDB";
-    public static final String DEFAULT_PGADMIN_DEFAULT_EMAIL = "postgres@postgres.com";
-    public static final String DEFAULT_PGADMIN_DEFAULT_PASSWORD = "postgres";
     public static final String PERSISTENCE_UNIT_NAME = "petproject.jpa";
 
     @Getter
@@ -46,6 +44,7 @@ public class DaoFactory {
         cfg.setProperty(AvailableSettings.JAKARTA_JDBC_URL, jakartaJdbcUrl);
         cfg.setProperty(AvailableSettings.JAKARTA_JDBC_USER, user);
         cfg.setProperty(AvailableSettings.JAKARTA_JDBC_PASSWORD, password);
+//        cfg.setProperty(AvailableSettings.ENABLE_LAZY_LOAD_NO_TRANS, true);
 
         cfg.setProperty(AvailableSettings.HBM2DDL_AUTO, Action.ACTION_UPDATE);
 

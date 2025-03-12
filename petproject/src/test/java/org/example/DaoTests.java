@@ -244,7 +244,7 @@ public class DaoTests {
         List<Pet> pets = petRepo.getAll();
 
         assertIterableEquals(List.of(pet), pets);
-        assertEquals(null, pet.getOwner());
+        assertNull(pet.getOwner());
     }
 
     @Test
@@ -264,6 +264,6 @@ public class DaoTests {
         List<Pet> pets = petRepo.getAll();
 
         assertIterableEquals(List.of(), pets);
-        assertEquals(null, pet.getOwner());
+        assertNull(pet.getOwner());
     }
 }

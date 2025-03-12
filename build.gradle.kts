@@ -17,6 +17,7 @@ allprojects {
         options.memberLevel = JavadocMemberLevel.PUBLIC
         options.encoding = "UTF-8"
         isFailOnError = false
+        classpath = files(sourceSets.main.get().compileClasspath, sourceSets.main.get().runtimeClasspath)
     }
 
     tasks.build {
