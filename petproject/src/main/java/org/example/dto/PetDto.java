@@ -2,12 +2,13 @@ package org.example.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import org.example.entities.AvailableColor;
+import lombok.EqualsAndHashCode;
 
 import java.util.Set;
 
 @Data
 @Builder
+@EqualsAndHashCode
 public class PetDto {
     private Long id;
     private String name;

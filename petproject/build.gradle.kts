@@ -19,10 +19,13 @@ dependencies {
     testImplementation("org.testcontainers:postgresql")
 
     testImplementation("ch.qos.logback:logback-classic:1.2.11")
+
+    testImplementation("org.mockito:mockito-core:5.8.0")
 }
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
+    jvmArgs("-XX:+EnableDynamicAgentLoading")
 }
 
 tasks.register<JavaExec>("runApplication") {

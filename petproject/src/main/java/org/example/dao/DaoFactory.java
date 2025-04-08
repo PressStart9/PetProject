@@ -1,4 +1,4 @@
-package org.example;
+package org.example.dao;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -7,8 +7,6 @@ import lombok.Getter;
 import lombok.val;
 import org.example.entities.Person;
 import org.example.entities.Pet;
-import org.example.repositories.PersonRepository;
-import org.example.repositories.PetRepository;
 import org.hibernate.Session;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.cfg.Configuration;

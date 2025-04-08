@@ -1,16 +1,15 @@
-package org.example.repositories;
+package org.example.dao;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.PersistenceContextType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaQuery;
-import org.example.DaoFactory;
+import org.example.dto.PersonDto;
 import org.example.entities.Person;
 import org.example.entities.Pet;
+import org.hibernate.Hibernate;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PersonRepository implements IRepository<Person> {
     private final DaoFactory daoFactory;
@@ -62,7 +61,12 @@ public class PersonRepository implements IRepository<Person> {
     @Override
     public Person getById(long id) {
         return daoFactory.inTransaction(entityManager -> {
-            return entityManager.find(Person.class, id);
+            var entity = entityManager.find(Person.class, id);
+            if (entity == null) {
+                return null;
+            }
+            Hibernate.initialize(entity.getPets());
+            return entity;
         });
     }
 

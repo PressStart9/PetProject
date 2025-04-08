@@ -1,11 +1,11 @@
-package org.example.services;
+package org.example.service;
 
 import lombok.AllArgsConstructor;
-import org.example.DaoFactory;
+import org.example.dao.DaoFactory;
 import org.example.dto.PersonDto;
 import org.example.entities.Person;
 import org.example.entities.Pet;
-import org.example.repositories.PersonRepository;
+import org.example.dao.PersonRepository;
 
 import java.util.HashSet;
 import java.util.List;
@@ -42,16 +42,14 @@ public class PersonService {
         personRepository.deleteAll();
     }
 
-    private PersonDto convertToDto(Person person) {
-        return daoFactory.inTransaction(entityManager -> {
-            entityManager.refresh(person);
-            return PersonDto.builder()
-                    .id(person.getId())
-                    .name(person.getName())
-                    .birthdate(person.getBirthdate())
-                    .petsIds(person.getPets().stream().map(Pet::getId).collect(Collectors.toSet()))
-                    .build();
-        });
+    public PersonDto convertToDto(Person person) {
+        var updatedPerson = personRepository.getById(person.getId());
+        return PersonDto.builder()
+                .id(updatedPerson.getId())
+                .name(updatedPerson.getName())
+                .birthdate(updatedPerson.getBirthdate())
+                .petsIds(updatedPerson.getPets().stream().map(Pet::getId).collect(Collectors.toSet()))
+                .build();
     }
 
     private Person convertToEntity(PersonDto personDto) {

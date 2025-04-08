@@ -1,11 +1,11 @@
-package org.example.services;
+package org.example.service;
 
 import lombok.AllArgsConstructor;
-import org.example.DaoFactory;
+import org.example.dao.DaoFactory;
 import org.example.dto.PetDto;
-import org.example.entities.AvailableColor;
+import org.example.dto.AvailableColor;
 import org.example.entities.Pet;
-import org.example.repositories.PetRepository;
+import org.example.dao.PetRepository;
 
 import java.util.HashSet;
 import java.util.List;
@@ -46,18 +46,16 @@ public class PetService {
         petRepository.deleteAll();
     }
 
-    private PetDto convertToDto(Pet pet) {
-        return daoFactory.inTransaction(entityManager -> {
-            entityManager.refresh(pet);
-            return PetDto.builder()
-                    .id(pet.getId())
-                    .name(pet.getName())
-                    .breed(pet.getBreed())
-                    .color(pet.getColor())
-                    .ownerId(pet.getOwner() != null ? pet.getOwner().getId() : null)
-                    .friendsIds(pet.getFriends().stream().map(Pet::getId).collect(Collectors.toSet()))
-                    .build();
-        });
+    public PetDto convertToDto(Pet pet) {
+        var updatedPet = petRepository.getById(pet.getId());
+        return PetDto.builder()
+                .id(pet.getId())
+                .name(pet.getName())
+                .breed(pet.getBreed())
+                .color(pet.getColor())
+                .ownerId(pet.getOwner() != null ? pet.getOwner().getId() : null)
+                .friendsIds(pet.getFriends().stream().map(Pet::getId).collect(Collectors.toSet()))
+                .build();
     }
 
     private Pet convertToEntity(PetDto petDto) {

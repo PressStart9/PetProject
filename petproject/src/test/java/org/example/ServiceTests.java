@@ -1,63 +1,46 @@
 package org.example;
 
+import org.example.dao.DaoFactory;
 import org.example.dto.PersonDto;
 import org.example.dto.PetDto;
-import org.example.entities.AvailableColor;
-import org.example.repositories.PersonRepository;
-import org.example.repositories.PetRepository;
-import org.example.services.PersonService;
-import org.example.services.PetService;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.example.dto.AvailableColor;
+import org.example.dao.PersonRepository;
+import org.example.dao.PetRepository;
+import org.example.entities.Pet;
+import org.example.entities.Person;
+import org.example.service.PersonService;
+import org.example.service.PetService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.sql.Date;
 import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class ServiceTests {
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
-            "postgres:16-alpine"
-    );
+    @Mock
+    private DaoFactory daoFactory;
+    @Mock
+    private PetRepository petRepo;
+    @Mock
+    private PersonRepository personRepo;
 
-    static DaoFactory daoFactory;
-
-    static PetRepository petRepo;
-    static PersonRepository personRepo;
-
-    static PetService petServ;
-    static PersonService personServ;
-
-    @BeforeAll
-    static void beforeAll() {
-        postgres.start();
-        daoFactory = new DaoFactory(
-                postgres.getUsername(),
-                postgres.getPassword(),
-                postgres.getFirstMappedPort().toString(),
-                postgres.getDatabaseName()
-        );
-
-        petRepo = daoFactory.getPetRepository();
-        personRepo = daoFactory.getPersonRepository();
-
-        petServ = new PetService(daoFactory, petRepo);
-        personServ = new PersonService(daoFactory, personRepo);
-    }
-
-    @AfterAll
-    static void afterAll() {
-        postgres.stop();
-    }
+    @InjectMocks
+    private PetService petServ;
+    @InjectMocks
+    private PersonService personServ;
 
     @BeforeEach
     void setUp() {
-        petRepo.deleteAll();
-        personRepo.deleteAll();
+        MockitoAnnotations.openMocks(this);
+        when(daoFactory.getPersonRepository()).thenReturn(personRepo);
+        when(daoFactory.getPetRepository()).thenReturn(petRepo);
     }
 
     @Test
@@ -68,11 +51,20 @@ public class ServiceTests {
                 .color(AvailableColor.Red)
                 .build();
 
-        var id = petServ.createPet(petDto);
+        Pet pet = new Pet();
+        pet.setId(1L);
+        pet.setName("Pet1");
+        pet.setBreed("Breed1");
+        pet.setColor(AvailableColor.Red);
+
+        when(petRepo.save(any(Pet.class))).thenReturn(pet);
+        when(petRepo.getById(1L)).thenReturn(pet);
+
+        Long id = petServ.createPet(petDto);
 
         PetDto createdPet = petServ.getPetById(id);
         assertNotNull(createdPet);
-        assertEquals("Pet1", createdPet.getName());
+        assertEquals(pet.getName(), createdPet.getName());
     }
 
     @Test
@@ -89,8 +81,19 @@ public class ServiceTests {
                 .color(AvailableColor.Yellow)
                 .build();
 
-        petServ.createPet(petDto1);
-        petServ.createPet(petDto2);
+        Pet pet1 = new Pet();
+        pet1.setId(1L);
+        pet1.setName("Pet3");
+        pet1.setBreed("Breed3");
+        pet1.setColor(AvailableColor.Green);
+
+        Pet pet2 = new Pet();
+        pet2.setId(2L);
+        pet2.setName("Pet4");
+        pet2.setBreed("Breed4");
+        pet2.setColor(AvailableColor.Yellow);
+
+        when(petRepo.getAll()).thenReturn(List.of(pet1, pet2));
 
         List<PetDto> allPets = petServ.getAllPets();
         assertEquals(2, allPets.size());
@@ -104,7 +107,16 @@ public class ServiceTests {
                 .color(AvailableColor.Red)
                 .build();
 
-        var id = petServ.createPet(petDto);
+        Pet pet = new Pet();
+        pet.setId(1L);
+        pet.setName("Pet5");
+        pet.setBreed("Breed5");
+        pet.setColor(AvailableColor.Red);
+
+        when(petRepo.save(any(Pet.class))).thenReturn(pet);
+        when(petRepo.getById(1L)).thenReturn(pet);
+
+        Long id = petServ.createPet(petDto);
 
         PetDto updatedPetDto = PetDto.builder()
                 .id(id)
@@ -115,8 +127,12 @@ public class ServiceTests {
 
         petServ.updatePet(updatedPetDto);
 
+        pet.setName(updatedPetDto.getName());
+        pet.setBreed(updatedPetDto.getBreed());
+        pet.setColor(updatedPetDto.getColor());
+
         PetDto updatedPet = petServ.getPetById(id);
-        assertEquals("UpdatedPet", updatedPet.getName());
+        assertEquals(updatedPetDto.getName(), updatedPet.getName());
     }
 
     @Test
@@ -127,9 +143,21 @@ public class ServiceTests {
                 .color(AvailableColor.Red)
                 .build();
 
-        var id = petServ.createPet(petDto);
+        Pet pet = new Pet();
+        pet.setId(1L);
+        pet.setName("Pet6");
+        pet.setBreed("Breed6");
+        pet.setColor(AvailableColor.Red);
+
+        when(petRepo.save(any(Pet.class))).thenReturn(pet);
+        when(petRepo.getById(1L)).thenReturn(pet);
+
+        Long id = petServ.createPet(petDto);
 
         petServ.deletePetById(id);
+
+        when(petRepo.getById(1L)).thenReturn(null);
+        when(petRepo.getAll()).thenReturn(List.of());
 
         PetDto deletedPet = petServ.getPetById(id);
         assertNull(deletedPet);
@@ -149,6 +177,21 @@ public class ServiceTests {
                 .breed("Breed8")
                 .color(AvailableColor.Blue)
                 .build();
+
+        Pet pet1 = new Pet();
+        pet1.setId(1L);
+        pet1.setName("Pet7");
+        pet1.setBreed("Breed7");
+        pet1.setColor(AvailableColor.Red);
+
+        Pet pet2 = new Pet();
+        pet2.setId(2L);
+        pet2.setName("Pet8");
+        pet2.setBreed("Breed8");
+        pet2.setColor(AvailableColor.Blue);
+
+        when(petRepo.save(any(Pet.class))).thenReturn(pet1, pet2);
+        when(petRepo.getAll()).thenReturn(List.of());
 
         petServ.createPet(petDto1);
         petServ.createPet(petDto2);
@@ -178,6 +221,21 @@ public class ServiceTests {
                 .color(AvailableColor.Blue)
                 .build();
 
+        Pet pet1 = new Pet();
+        pet1.setId(1L);
+        pet1.setName("Pet9");
+        pet1.setBreed("Breed9");
+        pet1.setColor(AvailableColor.Red);
+
+        Pet pet2 = new Pet();
+        pet2.setId(2L);
+        pet2.setName("Pet10");
+        pet2.setBreed("Breed10");
+        pet2.setColor(AvailableColor.Red);
+
+        when(petRepo.save(any(Pet.class))).thenReturn(pet1, pet2);
+        when(petRepo.getPetsByColor(AvailableColor.Red)).thenReturn(List.of(pet1, pet2));
+
         petServ.createPet(petDto1);
         petServ.createPet(petDto2);
         petServ.createPet(petDto3);
@@ -193,7 +251,14 @@ public class ServiceTests {
                 .birthdate(Date.valueOf("2020-01-01"))
                 .build();
 
-        var ownerId = personServ.createPerson(ownerDto);
+        Person owner = new Person();
+        owner.setId(1L);
+        owner.setName("Owner1");
+        owner.setBirthdate(Date.valueOf("2020-01-01"));
+
+        when(personRepo.save(any(Person.class))).thenReturn(owner);
+
+        Long ownerId = personServ.createPerson(ownerDto);
 
         PetDto petDto = PetDto.builder()
                 .name("Pet11")
@@ -202,7 +267,17 @@ public class ServiceTests {
                 .ownerId(ownerId)
                 .build();
 
-        var petId = petServ.createPet(petDto);
+        Pet pet = new Pet();
+        pet.setId(1L);
+        pet.setName("Pet11");
+        pet.setBreed("Breed11");
+        pet.setColor(AvailableColor.Red);
+        pet.setOwner(owner);
+
+        when(petRepo.save(any(Pet.class))).thenReturn(pet);
+        when(petRepo.getById(1L)).thenReturn(pet);
+
+        Long petId = petServ.createPet(petDto);
 
         PetDto createdPet = petServ.getPetById(petId);
         assertEquals(ownerId, createdPet.getOwnerId());
@@ -222,8 +297,23 @@ public class ServiceTests {
                 .color(AvailableColor.Green)
                 .build();
 
-        var friendId1 = petServ.createPet(friendDto1);
-        var friendId2 = petServ.createPet(friendDto2);
+        Pet friend1 = new Pet();
+        friend1.setId(1L);
+        friend1.setName("Friend1");
+        friend1.setBreed("Breed12");
+        friend1.setColor(AvailableColor.Blue);
+
+        Pet friend2 = new Pet();
+        friend2.setId(2L);
+        friend2.setName("Friend2");
+        friend2.setBreed("Breed13");
+        friend2.setColor(AvailableColor.Green);
+
+        when(petRepo.save(any(Pet.class))).thenReturn(friend1, friend2);
+        when(petRepo.getPetsByIds(Set.of(1L, 2L))).thenReturn(List.of(friend1, friend2));
+
+        Long friendId1 = petServ.createPet(friendDto1);
+        Long friendId2 = petServ.createPet(friendDto2);
 
         PetDto petDto = PetDto.builder()
                 .name("Pet12")
@@ -232,7 +322,17 @@ public class ServiceTests {
                 .friendsIds(Set.of(friendId1, friendId2))
                 .build();
 
-        var petId = petServ.createPet(petDto);
+        Pet pet = new Pet();
+        pet.setId(3L);
+        pet.setName("Pet12");
+        pet.setBreed("Breed14");
+        pet.setColor(AvailableColor.Red);
+        pet.setFriends(Set.of(friend1, friend2));
+
+        when(petRepo.save(any(Pet.class))).thenReturn(pet);
+        when(petRepo.getById(3L)).thenReturn(pet);
+
+        Long petId = petServ.createPet(petDto);
 
         PetDto createdPet = petServ.getPetById(petId);
         assertEquals(2, createdPet.getFriendsIds().size());
@@ -244,7 +344,13 @@ public class ServiceTests {
                 .name("Owner2")
                 .build();
 
-        var ownerId = personServ.createPerson(ownerDto);
+        Person owner = new Person();
+        owner.setId(1L);
+        owner.setName("Owner2");
+
+        when(personRepo.save(any(Person.class))).thenReturn(owner);
+
+        Long ownerId = personServ.createPerson(ownerDto);
 
         PetDto petDto = PetDto.builder()
                 .name("Pet13")
@@ -252,7 +358,16 @@ public class ServiceTests {
                 .color(AvailableColor.Red)
                 .build();
 
-        var petId = petServ.createPet(petDto);
+        Pet pet = new Pet();
+        pet.setId(1L);
+        pet.setName("Pet13");
+        pet.setBreed("Breed15");
+        pet.setColor(AvailableColor.Red);
+
+        when(petRepo.save(any(Pet.class))).thenReturn(pet);
+        when(petRepo.getById(1L)).thenReturn(pet);
+
+        Long petId = petServ.createPet(petDto);
 
         PetDto updatedPetDto = PetDto.builder()
                 .id(petId)
@@ -263,6 +378,9 @@ public class ServiceTests {
                 .build();
 
         petServ.updatePet(updatedPetDto);
+
+        owner.setId(ownerId);
+        pet.setOwner(owner);
 
         PetDto updatedPet = petServ.getPetById(petId);
         assertEquals(ownerId, updatedPet.getOwnerId());

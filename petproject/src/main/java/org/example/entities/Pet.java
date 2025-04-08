@@ -2,6 +2,7 @@ package org.example.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.dto.AvailableColor;
 
 import java.util.Date;
 import java.util.HashSet;

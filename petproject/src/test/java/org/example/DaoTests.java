@@ -1,11 +1,12 @@
 package org.example;
 
 import lombok.val;
-import org.example.entities.AvailableColor;
+import org.example.dto.AvailableColor;
 import org.example.entities.Person;
 import org.example.entities.Pet;
-import org.example.repositories.PersonRepository;
-import org.example.repositories.PetRepository;
+import org.example.dao.DaoFactory;
+import org.example.dao.PersonRepository;
+import org.example.dao.PetRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;

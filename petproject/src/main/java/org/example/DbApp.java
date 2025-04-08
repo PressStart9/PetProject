@@ -1,8 +1,7 @@
 package org.example;
 
 import lombok.val;
-import org.example.entities.AvailableColor;
-import org.example.entities.Pet;
+import org.example.dao.DaoFactory;
 
 public class DbApp {
     public static void main(String[] args) {

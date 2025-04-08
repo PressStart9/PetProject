@@ -1,11 +1,11 @@
-package org.example.repositories;
+package org.example.dao;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaQuery;
-import org.example.DaoFactory;
-import org.example.entities.AvailableColor;
+import org.example.dto.AvailableColor;
 import org.example.entities.Pet;
+import org.hibernate.Hibernate;
 
 import java.util.List;
 import java.util.Set;
@@ -69,7 +69,13 @@ public class PetRepository implements IRepository<Pet> {
     @Override
     public Pet getById(long id) {
         return daoFactory.inTransaction(entityManager -> {
-            return entityManager.find(Pet.class, id);
+            var entity = entityManager.find(Pet.class, id);
+            if (entity == null) {
+                return null;
+            }
+            Hibernate.initialize(entity.getOwner());
+            Hibernate.initialize(entity.getFriends());
+            return entity;
         });
     }
 
