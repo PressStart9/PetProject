@@ -15,6 +15,8 @@ allprojects {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
+
+    runtimeOnly("org.postgresql:postgresql")
 }
 
 tasks.test {
