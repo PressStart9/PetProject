@@ -86,7 +86,7 @@ public class PersonDaoTests extends BaseTestContainer {
         Pet pet = new Pet("Pet1",
                 Date.valueOf("2025-01-01"),
                 "Siamese",
-                AvailableColor.Black);
+                AvailableColor.black);
 
         person.addPet(pet);
 
@@ -103,7 +103,7 @@ public class PersonDaoTests extends BaseTestContainer {
         Pet pet = new Pet("Pet1",
                 Date.valueOf("2025-01-01"),
                 "Siamese",
-                AvailableColor.Black);
+                AvailableColor.black);
 
         assertTrue(person1.addPet(pet));
         assertFalse(person2.addPet(pet));

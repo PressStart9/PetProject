@@ -3,7 +3,7 @@ package ru.pressstart9.petproject.dto;
 import lombok.Builder;
 import lombok.Data;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.Set;
 
 @Data

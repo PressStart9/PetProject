@@ -7,6 +7,7 @@ import ru.pressstart9.petproject.domain.Pet;
 import org.springframework.stereotype.Service;
 import ru.pressstart9.petproject.dto.PersonDto;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,10 +19,9 @@ public class PersonService {
         this.personRepository = personRepository;
     }
 
-    public Long createPerson(PersonDto personDto) {
+    public Long createPerson(String name, Date birthdate) {
         return personRepository.save(
-                new Person(personDto.getName(),
-                        personDto.getBirthdate())).getId();
+                new Person(name, birthdate)).getId();
     }
 
     public PersonDto getPersonDtoById(long id) {

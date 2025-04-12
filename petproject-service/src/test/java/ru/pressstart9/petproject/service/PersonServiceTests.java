@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import ru.pressstart9.petproject.commons.exceptions.EntityNotFound;
 import ru.pressstart9.petproject.dao.PersonRepository;
-import ru.pressstart9.petproject.dao.PetRepository;
 import ru.pressstart9.petproject.domain.Person;
 import ru.pressstart9.petproject.dto.PersonDto;
 
@@ -19,12 +19,8 @@ import static org.mockito.Mockito.*;
 
 public class PersonServiceTests {
     @Mock
-    private PetRepository petRepo;
-    @Mock
     private PersonRepository personRepo;
 
-    @InjectMocks
-    private PetService petServ;
     @InjectMocks
     private PersonService personServ;
 
@@ -35,7 +31,7 @@ public class PersonServiceTests {
 
     @Test
     void testCreatePerson() {
-        Person person = new Person("Barsik",
+        Person person = new Person("Ivan",
                 Date.valueOf("2025-01-01"));
         person.setId(1L);
 
@@ -44,7 +40,7 @@ public class PersonServiceTests {
         when(personRepo.save(any(Person.class))).thenReturn(person);
         when(personRepo.findById(1L)).thenReturn(Optional.of(person));
 
-        Long id = personServ.createPerson(personDto);
+        Long id = personServ.createPerson(personDto.getName(), personDto.getBirthdate());
 
         PersonDto createdPerson = personServ.getPersonDtoById(id);
         assertNotNull(createdPerson);
@@ -52,18 +48,50 @@ public class PersonServiceTests {
     }
 
     @Test
-    void testGetAllPets() {
-        Person person1 = new Person("Person1",
+    void testGetPersonDtoById() {
+        Person person = new Person("Ivan",
+                Date.valueOf("2025-01-01"));
+        person.setId(1L);
+
+        when(personRepo.findById(1L)).thenReturn(Optional.of(person));
+
+        PersonDto personDto = personServ.getPersonDtoById(1L);
+        assertNotNull(personDto);
+        assertEquals(person.getName(), personDto.getName());
+    }
+
+    @Test
+    void testGetAllPeople() {
+        Person person1 = new Person("Ivan",
                 Date.valueOf("2025-01-01"));
         person1.setId(1L);
 
-        Person person2 = new Person("Pet2",
-                Date.valueOf("2025-01-01"));
-        person1.setId(2L);
+        Person person2 = new Person("Anna",
+                Date.valueOf("2025-02-01"));
+        person2.setId(2L);
 
         when(personRepo.findAll()).thenReturn(List.of(person1, person2));
 
         List<PersonDto> allPersons = personServ.getAllPeople();
         assertEquals(2, allPersons.size());
+    }
+
+    @Test
+    void testDeletePersonById() {
+        Person person = new Person("Ivan",
+                Date.valueOf("2025-01-01"));
+        person.setId(1L);
+
+        when(personRepo.findById(1L)).thenReturn(Optional.of(person));
+
+        personServ.deletePersonById(1L);
+        verify(personRepo, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void testDeletePersonByIdNotFound() {
+        when(personRepo.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFound.class, () -> personServ.deletePersonById(1L));
     }
 }

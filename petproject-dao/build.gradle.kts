@@ -8,6 +8,7 @@ dependencies {
     implementation(project(":petproject-commons"))
     implementation(project(":petproject-domain"))
 
+    implementation("org.springframework.boot:spring-boot")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
     implementation(platform("org.hibernate.orm:hibernate-platform:6.6.9.Final"))

@@ -10,6 +10,7 @@ import java.util.Set;
 
 @Entity @Table(name = "pet")
 @Getter @Setter
+@NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Pet {
     public Pet(String name, Date birthdate, String breed, AvailableColor color) {
@@ -46,6 +47,6 @@ public class Pet {
 
     public void removeFriend(Pet friend) {
         friends.remove(friend);
-        friend.friends.remove(friend);
+        friend.friends.remove(this);
     }
 }

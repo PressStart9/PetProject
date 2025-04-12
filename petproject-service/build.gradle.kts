@@ -10,13 +10,14 @@ dependencies {
     implementation(project(":petproject-domain"))
     implementation(project(":petproject-dao"))
 
+    implementation("org.springframework.boot:spring-boot")
     implementation("org.springframework:spring-context:6.2.5")
     implementation("org.springframework.data:spring-data-jpa:3.4.4")
 
     implementation(platform("org.hibernate.orm:hibernate-platform:6.6.9.Final"))
     implementation("org.hibernate.orm:hibernate-core")
 
-    testImplementation("org.mockito:mockito-core:5.17.0")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")

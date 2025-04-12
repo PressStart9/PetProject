@@ -29,7 +29,7 @@ public class PetDaoTests extends BaseTestContainer {
         Pet pet = new Pet("Barsik",
                 Date.valueOf("2025-01-01"),
                 "Siamese",
-                AvailableColor.Black);
+                AvailableColor.black);
 
         petRepo.save(pet);
 
@@ -43,7 +43,7 @@ public class PetDaoTests extends BaseTestContainer {
         Pet pet = new Pet("Barsik",
                 Date.valueOf("2025-01-01"),
                 "Siamese",
-                AvailableColor.Black);
+                AvailableColor.black);
 
         petRepo.save(pet);
 
@@ -61,7 +61,7 @@ public class PetDaoTests extends BaseTestContainer {
         Pet pet = new Pet("Barsik",
                 Date.valueOf("2025-01-01"),
                 "Siamese",
-                AvailableColor.Black);
+                AvailableColor.black);
 
         petRepo.save(pet);
 
@@ -75,12 +75,12 @@ public class PetDaoTests extends BaseTestContainer {
         Pet pet1 = new Pet("Pet1",
                 Date.valueOf("2025-01-01"),
                 "Siamese",
-                AvailableColor.Black);
+                AvailableColor.black);
 
         Pet pet2 = new Pet("Pet2",
                 Date.valueOf("2025-01-01"),
                 "Ragdoll",
-                AvailableColor.Blue);
+                AvailableColor.blue);
 
         petRepo.save(pet1);
         petRepo.save(pet2);
@@ -95,12 +95,12 @@ public class PetDaoTests extends BaseTestContainer {
         Pet pet1 = new Pet("Pet1",
                 Date.valueOf("2025-01-01"),
                 "Siamese",
-                AvailableColor.Black);
+                AvailableColor.black);
 
         Pet pet2 = new Pet("Pet2",
                 Date.valueOf("2025-01-01"),
                 "Ragdoll",
-                AvailableColor.Blue);
+                AvailableColor.blue);
 
         pet1.addFriend(pet2);
 
@@ -116,7 +116,7 @@ public class PetDaoTests extends BaseTestContainer {
         Pet pet1 = new Pet("Pet1",
                 Date.valueOf("2025-01-01"),
                 "Siamese",
-                AvailableColor.Black);
+                AvailableColor.black);
 
         petRepo.save(pet1);
 

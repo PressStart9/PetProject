@@ -1,17 +1,17 @@
 package ru.pressstart9.petproject.commons;
 
 public enum AvailableColor {
-    Black,
-    White,
-    Grey,
+    black,
+    white,
+    grey,
 
-    Red,
-    Green,
-    Blue,
+    red,
+    green,
+    blue,
 
-    Purple,
-    Orange,
-    Yellow,
-    Pink,
-    Brown,
+    purple,
+    orange,
+    yellow,
+    pink,
+    brown,
 }
