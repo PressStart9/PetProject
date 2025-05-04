@@ -1,13 +1,14 @@
 package ru.pressstart9.petproject.presentation;
 
-import org.springframework.validation.BindingResult;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pressstart9.petproject.dto.PersonDto;
 import ru.pressstart9.petproject.presentation.bodies.CreatePersonBody;
 import ru.pressstart9.petproject.service.PersonService;
 
-@RequestMapping("/people")
 @RestController
+@RequestMapping("/people")
 public class PersonController {
     private final PersonService personService;
 
@@ -16,17 +17,20 @@ public class PersonController {
     }
 
     @PostMapping
-    public Long createPerson(@RequestBody CreatePersonBody createPersonRequest, BindingResult result) {
-        return personService.createPerson(createPersonRequest.getName(), createPersonRequest.getBirthdate());
+    public ResponseEntity<Long> createPerson(@RequestBody CreatePersonBody request) {
+        Long id = personService.createPerson(request.getName(), request.getBirthdate());
+        return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
 
     @GetMapping("/{id}")
-    public PersonDto getPerson(@PathVariable("id") Long personId) {
-        return personService.getPersonDtoById(personId);
+    public ResponseEntity<PersonDto> getPerson(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(personService.getPersonDtoById(id));
     }
 
     @DeleteMapping("/{id}")
-    public void deletePerson(@PathVariable("id") Long personId) {
-        personService.deletePersonById(personId);
+    public ResponseEntity<Void> deletePerson(@PathVariable("id") Long id) {
+        personService.deletePersonById(id);
+        return ResponseEntity.noContent().build();
     }
 }
+

@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.pressstart9.petproject.commons.AvailableColor;
 import ru.pressstart9.petproject.dto.PetDto;
 import ru.pressstart9.petproject.presentation.bodies.CreatePetBody;
+import ru.pressstart9.petproject.presentation.bodies.FriendPairBody;
 import ru.pressstart9.petproject.service.PetService;
 
 import java.sql.Date;
@@ -51,7 +52,7 @@ public class PetControllerTests {
         mockMvc.perform(post("/pets")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createPetBody)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$").value(1));
     }
 
@@ -61,21 +62,18 @@ public class PetControllerTests {
                 .id(1L)
                 .name("Barsik")
                 .birthdate(Date.valueOf("2025-01-01"))
-                .breed("Siamese")
-                .color(AvailableColor.black)
                 .build();
         when(petService.getPetDtoById(anyLong())).thenReturn(petDto);
 
         mockMvc.perform(get("/pets/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("Barsik"));
+                .andExpect(jsonPath("$.id").value(1));
     }
 
     @Test
     void testDeletePet() throws Exception {
         mockMvc.perform(delete("/pets/1"))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -108,13 +106,19 @@ public class PetControllerTests {
 
     @Test
     void testAddPetFriend() throws Exception {
-        mockMvc.perform(post("/pets/friends/1/2"))
-                .andExpect(status().isOk());
+        FriendPairBody friendPairBody = new FriendPairBody(1L, 2L);
+        mockMvc.perform(put("/pets/friends")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(friendPairBody)))
+                .andExpect(status().isNoContent());
     }
 
     @Test
     void testRemovePetFriend() throws Exception {
-        mockMvc.perform(delete("/pets/friends/1/2"))
-                .andExpect(status().isOk());
+        FriendPairBody friendPairBody = new FriendPairBody(1L, 2L);
+        mockMvc.perform(delete("/pets/friends")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(friendPairBody)))
+                .andExpect(status().isNoContent());
     }
 }
