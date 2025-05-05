@@ -1,5 +1,6 @@
 package ru.pressstart9.petproject.presentation;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class PersonController {
     }
 
     @PostMapping
-    public ResponseEntity<Long> createPerson(@RequestBody CreatePersonBody request) {
+    public ResponseEntity<Long> createPerson(@Valid @RequestBody CreatePersonBody request) {
         Long id = personService.createPerson(request.getName(), request.getBirthdate());
         return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }

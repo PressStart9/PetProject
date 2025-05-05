@@ -44,10 +44,6 @@ public class PetService {
 
     public List<PetDto> getByParams(String name, String breed,
                                     List<AvailableColor> colors, int size, int page) {
-        if (size <= 0 || page < 0) {
-            throw new IllegalArgumentException("Page and size must be positive.");
-        }
-
         return petRepository.findByParams(
                         name.isBlank() ? null : name,
                         breed.isBlank() ? null : breed,

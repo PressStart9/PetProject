@@ -1,5 +1,8 @@
 package ru.pressstart9.petproject.presentation;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +24,7 @@ public class PetController {
     }
 
     @PostMapping
-    public ResponseEntity<Long> createPet(@RequestBody CreatePetBody createPetRequest) {
+    public ResponseEntity<Long> createPet(@Valid @RequestBody CreatePetBody createPetRequest) {
         Long id = petService.createPet(createPetRequest.getName(),
                 createPetRequest.getBirthdate(),
                 createPetRequest.getBreed(),
@@ -45,8 +48,8 @@ public class PetController {
             @RequestParam(name = "name", defaultValue = "") String name,
             @RequestParam(name = "breed", defaultValue = "") String breed,
             @RequestParam(name = "colors", defaultValue = "") List<String> colors,
-            @RequestParam(name = "size", defaultValue = "5") int size,
-            @RequestParam(name = "page", defaultValue = "0") int page) {
+            @RequestParam(name = "size", defaultValue = "5") @Positive int size,
+            @RequestParam(name = "page", defaultValue = "0") @PositiveOrZero int page) {
         List<AvailableColor> parsedColors = colors.stream()
                 .filter(c -> !c.isBlank())
                 .map(String::toUpperCase)
@@ -57,13 +60,13 @@ public class PetController {
     }
 
     @PutMapping("/friends")
-    public ResponseEntity<Void> addFriend(@RequestBody FriendPairBody request) {
+    public ResponseEntity<Void> addFriend(@Valid @RequestBody FriendPairBody request) {
         petService.addFriend(request.getPetId(), request.getFriendId());
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/friends")
-    public ResponseEntity<Void> removeFriend(@RequestBody FriendPairBody request) {
+    public ResponseEntity<Void> removeFriend(@Valid @RequestBody FriendPairBody request) {
         petService.removeFriend(request.getPetId(), request.getFriendId());
         return ResponseEntity.noContent().build();
     }

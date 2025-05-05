@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.pressstart9.petproject.commons.AvailableColor;
+import ru.pressstart9.petproject.commons.exceptions.EntityNotFound;
 import ru.pressstart9.petproject.dto.PetDto;
 import ru.pressstart9.petproject.presentation.bodies.CreatePetBody;
 import ru.pressstart9.petproject.presentation.bodies.FriendPairBody;
@@ -47,13 +48,67 @@ public class PetControllerTests {
         createPetBody.setBirthdate(Date.valueOf("2025-01-01"));
         createPetBody.setBreed("Siamese");
         createPetBody.setColor("black");
-        when(petService.createPet(any(), any(), any(), any())).thenReturn(1L);
 
+        when(petService.createPet(any(), any(), any(), any())).thenReturn(1L);
         mockMvc.perform(post("/pets")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createPetBody)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$").value(1));
+    }
+
+    @Test
+    void testCreateSamePet() throws Exception {
+        CreatePetBody createPetBody = new CreatePetBody();
+        createPetBody.setName("Barsik");
+        createPetBody.setBirthdate(Date.valueOf("2025-01-01"));
+        createPetBody.setBreed("Siamese");
+        createPetBody.setColor("black");
+
+        when(petService.createPet(any(), any(), any(), any())).thenReturn(1L);
+        mockMvc.perform(post("/pets")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createPetBody)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$").value(1));
+
+        when(petService.createPet(any(), any(), any(), any())).thenReturn(2L);
+        mockMvc.perform(post("/pets")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createPetBody)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$").value(2));
+    }
+
+    @Test
+    void testCreateBlankPet() throws Exception {
+        CreatePetBody createPetBody = new CreatePetBody();
+        createPetBody.setName("      ");
+        createPetBody.setBirthdate(Date.valueOf("2025-01-01"));
+        createPetBody.setBreed("Siamese");
+        createPetBody.setColor("black");
+
+        when(petService.createPet(any(), any(), any(), any())).thenReturn(1L);
+        mockMvc.perform(post("/pets")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createPetBody)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testCreateFuturePet() throws Exception {
+        CreatePetBody createPetBody = new CreatePetBody();
+        createPetBody.setName("Murzik");
+        // // Rewrite it after 9999 year
+        createPetBody.setBirthdate(Date.valueOf("9999-01-01"));
+        createPetBody.setBreed("Siamese");
+        createPetBody.setColor("black");
+
+        when(petService.createPet(any(), any(), any(), any())).thenReturn(1L);
+        mockMvc.perform(post("/pets")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createPetBody)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -68,6 +123,14 @@ public class PetControllerTests {
         mockMvc.perform(get("/pets/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1));
+    }
+
+    @Test
+    void testReadNonExistingPet() throws Exception {
+        when(petService.getPetDtoById(anyLong())).thenThrow(new EntityNotFound(1L));
+
+        mockMvc.perform(get("/pets/1"))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -105,8 +168,56 @@ public class PetControllerTests {
     }
 
     @Test
+    void testGetFilteredPetsWithWrongArguments() throws Exception {
+        mockMvc.perform(get("/pets")
+                        .param("name", "")
+                        .param("breed", "")
+                        .param("colors", "")
+                        .param("size", "0")
+                        .param("page", "0"))
+                .andExpect(status().isBadRequest());
+
+        mockMvc.perform(get("/pets")
+                        .param("name", "")
+                        .param("breed", "")
+                        .param("colors", "")
+                        .param("size", "-1")
+                        .param("page", "0"))
+                .andExpect(status().isBadRequest());
+
+        mockMvc.perform(get("/pets")
+                        .param("name", "")
+                        .param("breed", "")
+                        .param("colors", "")
+                        .param("size", "1")
+                        .param("page", "-1"))
+                .andExpect(status().isBadRequest());
+
+        mockMvc.perform(get("/pets")
+                        .param("name", "")
+                        .param("breed", "")
+                        .param("colors", "notColor")
+                        .param("size", "1")
+                        .param("page", "0"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void testAddPetFriend() throws Exception {
         FriendPairBody friendPairBody = new FriendPairBody(1L, 2L);
+        mockMvc.perform(put("/pets/friends")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(friendPairBody)))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void testAddSamePetFriend() throws Exception {
+        FriendPairBody friendPairBody = new FriendPairBody(1L, 2L);
+        mockMvc.perform(put("/pets/friends")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(friendPairBody)))
+                .andExpect(status().isNoContent());
         mockMvc.perform(put("/pets/friends")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(friendPairBody)))
@@ -119,6 +230,19 @@ public class PetControllerTests {
         mockMvc.perform(delete("/pets/friends")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(friendPairBody)))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void testRemoveSamePetFriend() throws Exception {
+        FriendPairBody friendPairBody = new FriendPairBody(1L, 2L);
+        mockMvc.perform(delete("/pets/friends")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(friendPairBody)))
+                .andExpect(status().isNoContent());
+        mockMvc.perform(delete("/pets/friends")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(friendPairBody)))
                 .andExpect(status().isNoContent());
     }
 }
