@@ -7,14 +7,19 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.pressstart9.petproject.commons.AvailableColor;
 import ru.pressstart9.petproject.commons.exceptions.EntityNotFound;
-import ru.pressstart9.petproject.dto.PetDto;
-import ru.pressstart9.petproject.presentation.bodies.CreatePetBody;
-import ru.pressstart9.petproject.presentation.bodies.FriendPairBody;
+import ru.pressstart9.petproject.dto.responses.PetDto;
+import ru.pressstart9.petproject.dto.requests.CreatePetBody;
+import ru.pressstart9.petproject.dto.requests.FriendPairBody;
+import ru.pressstart9.petproject.presentation.controllers.PetController;
+import ru.pressstart9.petproject.service.AuthService;
+import ru.pressstart9.petproject.service.PersonService;
 import ru.pressstart9.petproject.service.PetService;
+import ru.pressstart9.petproject.service.UserInfoService;
 
 import java.sql.Date;
 import java.util.List;
@@ -25,13 +30,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@WithMockUser(authorities = { "admin" })
 @WebMvcTest(PetController.class)
 public class PetControllerTests {
     @Autowired
     private MockMvc mockMvc;
 
     @MockitoBean
+    private PersonService personService;
+    @MockitoBean
     private PetService petService;
+    @MockitoBean
+    private UserInfoService userInfoService;
+    @MockitoBean
+    private AuthService authService;
 
     @Autowired
     private ObjectMapper objectMapper;

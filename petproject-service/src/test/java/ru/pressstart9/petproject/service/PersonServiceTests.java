@@ -8,7 +8,7 @@ import org.mockito.MockitoAnnotations;
 import ru.pressstart9.petproject.commons.exceptions.EntityNotFound;
 import ru.pressstart9.petproject.dao.PersonRepository;
 import ru.pressstart9.petproject.domain.Person;
-import ru.pressstart9.petproject.dto.PersonDto;
+import ru.pressstart9.petproject.dto.responses.PersonDto;
 
 import java.sql.Date;
 import java.util.List;

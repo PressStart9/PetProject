@@ -11,15 +11,13 @@
       - POSTGRES_USER=${POSTGRES_USER}
 
   database-web:
-    depends_on:
-      - database
     image: dpage/pgadmin4:latest
     restart: unless-stopped
     ports:
       - "8080:80"
     environment:
-      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
       - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
       - PGADMIN_CONFIG_SERVER_MODE=False
       - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
 

@@ -10,7 +10,7 @@ import ru.pressstart9.petproject.commons.AvailableColor;
 import ru.pressstart9.petproject.commons.exceptions.EntityNotFound;
 import ru.pressstart9.petproject.dao.PetRepository;
 import ru.pressstart9.petproject.domain.Pet;
-import ru.pressstart9.petproject.dto.PetDto;
+import ru.pressstart9.petproject.dto.responses.PetDto;
 
 import java.sql.Date;
 import java.util.List;

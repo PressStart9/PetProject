@@ -10,12 +10,19 @@ dependencies {
     implementation(project(":petproject-domain"))
     implementation(project(":petproject-dao"))
 
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
+
     implementation("org.springframework.boot:spring-boot")
     implementation("org.springframework:spring-context:6.2.5")
     implementation("org.springframework.data:spring-data-jpa:3.4.4")
 
+    implementation("org.springframework.boot:spring-boot-starter-security")
+
     implementation(platform("org.hibernate.orm:hibernate-platform:6.6.9.Final"))
     implementation("org.hibernate.orm:hibernate-core")
+
+    compileOnly("org.projectlombok:lombok:1.18.36")
+    annotationProcessor("org.projectlombok:lombok:1.18.36")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 

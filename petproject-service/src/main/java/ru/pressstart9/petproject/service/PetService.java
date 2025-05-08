@@ -3,7 +3,7 @@ package ru.pressstart9.petproject.service;
 import org.springframework.data.domain.PageRequest;
 import ru.pressstart9.petproject.commons.AvailableColor;
 import ru.pressstart9.petproject.commons.exceptions.EntityNotFound;
-import ru.pressstart9.petproject.dto.PetDto;
+import ru.pressstart9.petproject.dto.responses.PetDto;
 import ru.pressstart9.petproject.dao.PetRepository;
 import ru.pressstart9.petproject.domain.Pet;
 import org.springframework.stereotype.Service;

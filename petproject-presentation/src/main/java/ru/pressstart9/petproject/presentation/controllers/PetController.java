@@ -1,15 +1,16 @@
-package ru.pressstart9.petproject.presentation;
+package ru.pressstart9.petproject.presentation.controllers;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.pressstart9.petproject.commons.AvailableColor;
-import ru.pressstart9.petproject.dto.PetDto;
-import ru.pressstart9.petproject.presentation.bodies.CreatePetBody;
-import ru.pressstart9.petproject.presentation.bodies.FriendPairBody;
+import ru.pressstart9.petproject.dto.responses.PetDto;
+import ru.pressstart9.petproject.dto.requests.CreatePetBody;
+import ru.pressstart9.petproject.dto.requests.FriendPairBody;
 import ru.pressstart9.petproject.service.PetService;
 
 import java.util.List;
@@ -38,6 +39,7 @@ public class PetController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("@permission.isOwner(#id)")
     public ResponseEntity<Void> deletePet(@PathVariable("id") Long id) {
         petService.deletePetById(id);
         return ResponseEntity.noContent().build();
@@ -60,12 +62,14 @@ public class PetController {
     }
 
     @PutMapping("/friends")
+    @PreAuthorize("@permission.isOwner(#request)")
     public ResponseEntity<Void> addFriend(@Valid @RequestBody FriendPairBody request) {
         petService.addFriend(request.getPetId(), request.getFriendId());
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/friends")
+    @PreAuthorize("@permission.isOwner(#request)")
     public ResponseEntity<Void> removeFriend(@Valid @RequestBody FriendPairBody request) {
         petService.removeFriend(request.getPetId(), request.getFriendId());
         return ResponseEntity.noContent().build();
