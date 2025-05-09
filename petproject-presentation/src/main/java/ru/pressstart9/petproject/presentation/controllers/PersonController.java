@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import ru.pressstart9.petproject.dto.responses.PersonDto;
 import ru.pressstart9.petproject.dto.requests.CreatePersonBody;
@@ -32,7 +33,7 @@ public class PersonController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("@permission.isSelf(#id)")
-    public ResponseEntity<Void> deletePerson(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deletePerson(@P("id") @PathVariable("id") Long id) {
         personService.deletePersonById(id);
         return ResponseEntity.noContent().build();
     }

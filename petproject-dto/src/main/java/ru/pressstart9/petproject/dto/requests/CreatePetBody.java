@@ -5,11 +5,17 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-@Data
+@Data @NoArgsConstructor
 public class CreatePetBody {
+    public CreatePetBody(String name, Date birthdate) {
+        this.name = name;
+        this.birthdate = birthdate;
+    }
+
     @NotBlank
     public String name;
     @Past @NotNull

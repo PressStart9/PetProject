@@ -37,7 +37,7 @@ public class AuthPermissionChecks {
         return Objects.equals(selfId, ((ExtendedUser) auth.getPrincipal()).getId());
     }
 
-    public boolean isOwner(FriendPairBody request) {
+    public boolean isOwner(Long petId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth.getAuthorities().stream().anyMatch(authority ->
                 Objects.equals(authority.getAuthority(), UserRole.admin.toString()))) {
@@ -48,6 +48,10 @@ public class AuthPermissionChecks {
             return false;
         }
 
-        return Objects.equals(((ExtendedUser) auth.getPrincipal()).getId(), petService.getPetDtoById(request.getPetId()).getOwnerId());
+        return Objects.equals(((ExtendedUser) auth.getPrincipal()).getId(), petService.getPetDtoById(petId).getOwnerId());
+    }
+
+    public boolean isOwnerOfPair(FriendPairBody request) {
+        return isOwner(request.petId);
     }
 }

@@ -11,8 +11,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.pressstart9.petproject.commons.exceptions.EntityNotFound;
+import ru.pressstart9.petproject.dto.requests.CreatePersonBody;
 import ru.pressstart9.petproject.dto.responses.PersonDto;
-import ru.pressstart9.petproject.dto.auth.CreateAccountBody;
 import ru.pressstart9.petproject.presentation.controllers.PersonController;
 import ru.pressstart9.petproject.service.AuthService;
 import ru.pressstart9.petproject.service.PersonService;
@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WithMockUser(authorities = { "admin" })
 @WebMvcTest(PersonController.class)
-public class PersonControllerTests {
+public class PersonControllerAdminTests {
     @Autowired
     private MockMvc mockMvc;
 
@@ -51,44 +51,41 @@ public class PersonControllerTests {
         MockitoAnnotations.openMocks(this);
     }
 
+    public static CreatePersonBody getValidCreatePersonBody() {
+        return new CreatePersonBody("Ivan", Date.valueOf("2025-01-01"));
+    }
+
     @Test
     void testCreatePerson() throws Exception {
-        CreateAccountBody createAccountBody = new CreateAccountBody();
-        createAccountBody.setName("Ivan");
-        createAccountBody.setBirthdate(Date.valueOf("2025-01-01"));
         when(personService.createPerson(any(), any())).thenReturn(1L);
 
         mockMvc.perform(post("/people")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(createAccountBody)))
+                        .content(objectMapper.writeValueAsString(getValidCreatePersonBody())))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$").value(1));
     }
 
     @Test
     void testCreateBlankPerson() throws Exception {
-        CreateAccountBody createAccountBody = new CreateAccountBody();
-        createAccountBody.setName("      ");
-        createAccountBody.setBirthdate(Date.valueOf("2025-01-01"));
-        when(personService.createPerson(any(), any())).thenReturn(1L);
+        CreatePersonBody CreatePersonBody = getValidCreatePersonBody();
+        CreatePersonBody.setName("   ");
 
         mockMvc.perform(post("/people")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(createAccountBody)))
+                        .content(objectMapper.writeValueAsString(CreatePersonBody)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void testCreateFuturePerson() throws Exception {
-        CreateAccountBody createAccountBody = new CreateAccountBody();
-        createAccountBody.setName("Ivan");
+        CreatePersonBody CreatePersonBody = getValidCreatePersonBody();
         // Rewrite it after 9999 year
-        createAccountBody.setBirthdate(Date.valueOf("9999-01-01"));
-        when(personService.createPerson(any(), any())).thenReturn(1L);
+        CreatePersonBody.setBirthdate(Date.valueOf("9999-01-01"));
 
         mockMvc.perform(post("/people")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(createAccountBody)))
+                        .content(objectMapper.writeValueAsString(CreatePersonBody)))
                 .andExpect(status().isBadRequest());
     }
 

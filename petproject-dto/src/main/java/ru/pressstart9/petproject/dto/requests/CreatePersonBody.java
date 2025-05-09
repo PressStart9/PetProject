@@ -2,11 +2,13 @@ package ru.pressstart9.petproject.dto.requests;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-@Data
+@Data @AllArgsConstructor @NoArgsConstructor
 public class CreatePersonBody {
     @NotBlank
     public String name;

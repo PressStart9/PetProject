@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WithMockUser(authorities = { "admin" })
 @WebMvcTest(PetController.class)
-public class PetControllerTests {
+public class PetControllerAdminTests {
     @Autowired
     private MockMvc mockMvc;
 

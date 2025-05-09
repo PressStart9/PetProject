@@ -26,13 +26,13 @@ public class AuthController {
     public ResponseEntity<JwtAuthResponse> createPerson(@Valid @RequestBody CreateAccountBody request) {
         JwtAuthResponse response = new JwtAuthResponse();
         response.setAccessToken(jwtTokenProvider.generateToken(authService.createAccount(request)));
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping("/login")
     public ResponseEntity<JwtAuthResponse> login(@Valid @RequestBody LoginBody request) {
         JwtAuthResponse response = new JwtAuthResponse();
         response.setAccessToken(jwtTokenProvider.generateToken(authService.login(request)));
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
