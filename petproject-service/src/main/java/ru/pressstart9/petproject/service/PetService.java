@@ -3,7 +3,7 @@ package ru.pressstart9.petproject.service;
 import org.springframework.data.domain.PageRequest;
 import ru.pressstart9.petproject.commons.AvailableColor;
 import ru.pressstart9.petproject.commons.exceptions.EntityNotFound;
-import ru.pressstart9.petproject.dto.PetDto;
+import ru.pressstart9.petproject.dto.responses.PetDto;
 import ru.pressstart9.petproject.dao.PetRepository;
 import ru.pressstart9.petproject.domain.Pet;
 import org.springframework.stereotype.Service;
@@ -42,15 +42,16 @@ public class PetService {
         petRepository.deleteById(id);
     }
 
-    public List<PetDto> getByParams(String name,
-                                    String breed,
-                                    List<AvailableColor> colors,
-                                    int size, int page) {
-        return petRepository.findByParams(name.isEmpty() ? null : name,
-                        breed.isEmpty() ? null : breed,
-                        colors.isEmpty() ? null : colors,
+    public List<PetDto> getByParams(String name, String breed,
+                                    List<AvailableColor> colors, int size, int page) {
+        return petRepository.findByParams(
+                        name.isBlank() ? null : name,
+                        breed.isBlank() ? null : breed,
+                        colors == null || colors.isEmpty() ? null : colors,
                         PageRequest.of(page, size))
-                            .stream().map(PetService::convertToDto).toList();
+                .stream()
+                .map(PetService::convertToDto)
+                .toList();
     }
 
     public void addFriend(long petId, long friendId) {

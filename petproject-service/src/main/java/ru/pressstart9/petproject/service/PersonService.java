@@ -5,7 +5,7 @@ import ru.pressstart9.petproject.dao.PersonRepository;
 import ru.pressstart9.petproject.domain.Person;
 import ru.pressstart9.petproject.domain.Pet;
 import org.springframework.stereotype.Service;
-import ru.pressstart9.petproject.dto.PersonDto;
+import ru.pressstart9.petproject.dto.responses.PersonDto;
 
 import java.util.Date;
 import java.util.List;

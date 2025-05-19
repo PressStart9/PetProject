@@ -1,4 +1,4 @@
-package ru.pressstart9.petproject.dto;
+package ru.pressstart9.petproject.dto.responses;
 
 import lombok.Builder;
 import lombok.Data;
