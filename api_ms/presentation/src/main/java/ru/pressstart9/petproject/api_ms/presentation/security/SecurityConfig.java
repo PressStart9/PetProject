@@ -45,7 +45,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/pets/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/pets/**").authenticated()
 
-                        .anyRequest().denyAll()
+                        .anyRequest().permitAll()
                 )
 
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)

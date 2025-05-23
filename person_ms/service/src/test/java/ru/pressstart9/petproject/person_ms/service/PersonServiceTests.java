@@ -1,14 +1,14 @@
-package ru.pressstart9.petproject.service;
+package ru.pressstart9.petproject.person_ms.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import ru.pressstart9.petproject.commons.exceptions.EntityNotFound;
-import ru.pressstart9.petproject.dao.PersonRepository;
-import ru.pressstart9.petproject.domain.Person;
-import ru.pressstart9.petproject.dto.responses.PersonDto;
+import ru.pressstart9.petproject.common_kafka.exceptions.EntityNotFound;
+import ru.pressstart9.petproject.person_ms.dao.PersonRepository;
+import ru.pressstart9.petproject.person_ms.domain.Person;
+import ru.pressstart9.petproject.dto.PersonDto;
 
 import java.sql.Date;
 import java.util.List;

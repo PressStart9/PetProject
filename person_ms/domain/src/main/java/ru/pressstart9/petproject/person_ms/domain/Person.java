@@ -24,20 +24,13 @@ public class Person {
     private String name;
     private Date birthdate;
 
-    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
-    private Set<Pet> pets = new HashSet<>();
+    private Set<Long> petIds = new HashSet<>();
 
-    public boolean addPet(Pet pet) {
-        if (pet.getOwner() != null) {
-            return false;
-        }
-        pet.setOwner(this);
-        pets.add(pet);
-        return true;
+    public void addPet(Long petId) {
+        petIds.add(petId);
     }
 
-    public void removePet(Pet pet) {
-        pet.setOwner(null);
-        pets.remove(pet);
+    public void removePet(Long petId) {
+        petIds.remove(petId);
     }
 }

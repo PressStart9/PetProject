@@ -8,7 +8,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 
 public abstract class BaseTestContainer {
     @SpringBootApplication
-    @EntityScan(basePackages = "ru.pressstart9.petproject.domain")
+    @EntityScan(basePackages = "ru.pressstart9.petproject.person_ms.domain")
     static class TestApplication {}
 
     protected static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15");

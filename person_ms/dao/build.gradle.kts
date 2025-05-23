@@ -8,13 +8,12 @@ dependencies {
     implementation(project(":commons"))
     implementation(project(":person_ms:domain"))
 
-    implementation("org.springframework.boot:spring-boot")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
     implementation(platform("org.hibernate.orm:hibernate-platform:6.6.9.Final"))
     implementation("org.hibernate.orm:hibernate-core")
 
-    runtimeOnly("org.postgresql:postgresql")
+    implementation("org.postgresql:postgresql")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 

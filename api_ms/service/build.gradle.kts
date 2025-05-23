@@ -6,20 +6,17 @@ plugins {
 
 dependencies {
     implementation(project(":commons"))
-    implementation(project(":dto"))
+    implementation(project(":common_dtos"))
     implementation(project(":api_ms:domain"))
     implementation(project(":api_ms:dao"))
 
     implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
 
-    implementation("org.springframework.boot:spring-boot")
-    implementation("org.springframework:spring-context:6.2.5")
-    implementation("org.springframework.data:spring-data-jpa:3.4.4")
+    implementation("org.springframework.kafka:spring-kafka")
 
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-security")
-
-    implementation(platform("org.hibernate.orm:hibernate-platform:6.6.9.Final"))
-    implementation("org.hibernate.orm:hibernate-core")
 
     compileOnly("org.projectlombok:lombok:1.18.36")
     annotationProcessor("org.projectlombok:lombok:1.18.36")

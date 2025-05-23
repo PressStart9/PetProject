@@ -9,8 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.pressstart9.petproject.dto.auth.CreateAccountBody;
 import ru.pressstart9.petproject.dto.auth.JwtAuthResponse;
 import ru.pressstart9.petproject.dto.auth.LoginBody;
-import ru.pressstart9.petproject.service.AuthService;
-import ru.pressstart9.petproject.presentation.security.JwtTokenProvider;
+import ru.pressstart9.petproject.api_ms.service.AuthService;
+import ru.pressstart9.petproject.api_ms.presentation.security.JwtTokenProvider;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 public class AuthController {
@@ -23,16 +26,16 @@ public class AuthController {
     }
 
     @PostMapping("/auth")
-    public ResponseEntity<JwtAuthResponse> createPerson(@Valid @RequestBody CreateAccountBody request) {
-        JwtAuthResponse response = new JwtAuthResponse();
-        response.setAccessToken(jwtTokenProvider.generateToken(authService.createAccount(request)));
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+    public ResponseEntity<JwtAuthResponse> createPerson(@Valid @RequestBody CreateAccountBody request) throws ExecutionException, InterruptedException {
+        var response = authService.createAccount(request);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                        new JwtAuthResponse(jwtTokenProvider.generateToken(response)));
     }
 
     @PostMapping("/login")
     public ResponseEntity<JwtAuthResponse> login(@Valid @RequestBody LoginBody request) {
-        JwtAuthResponse response = new JwtAuthResponse();
-        response.setAccessToken(jwtTokenProvider.generateToken(authService.login(request)));
+        JwtAuthResponse response = new JwtAuthResponse(
+            jwtTokenProvider.generateToken(authService.login(request)));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

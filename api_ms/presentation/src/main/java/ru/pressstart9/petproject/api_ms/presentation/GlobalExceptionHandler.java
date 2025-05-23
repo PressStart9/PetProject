@@ -4,8 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import ru.pressstart9.petproject.commons.exceptions.EmailNotUnique;
-import ru.pressstart9.petproject.commons.exceptions.EntityNotFound;
+import ru.pressstart9.petproject.common_kafka.exceptions.EmailNotUnique;
+import ru.pressstart9.petproject.common_kafka.exceptions.EntityNotFound;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {

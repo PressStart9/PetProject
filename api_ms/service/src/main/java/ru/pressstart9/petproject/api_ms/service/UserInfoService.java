@@ -8,25 +8,19 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.pressstart9.petproject.commons.exceptions.EmailNotUnique;
-import ru.pressstart9.petproject.dao.PersonRepository;
-import ru.pressstart9.petproject.dao.UserInfoRepository;
-import ru.pressstart9.petproject.domain.Person;
-import ru.pressstart9.petproject.domain.UserInfo;
-import ru.pressstart9.petproject.service.util.ExtendedUser;
-
-import java.util.Optional;
+import ru.pressstart9.petproject.api_ms.service.util.ExtendedUser;
+import ru.pressstart9.petproject.common_kafka.exceptions.EmailNotUnique;
+import ru.pressstart9.petproject.api_ms.dao.UserInfoRepository;
+import ru.pressstart9.petproject.api_ms.domain.UserInfo;
 import java.util.Set;
 
 @Service
 public class UserInfoService implements UserDetailsService {
     private final UserInfoRepository userInfoRepository;
-    private final PersonRepository personRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserInfoService(UserInfoRepository userInfoRepository, PersonRepository personRepository, PasswordEncoder passwordEncoder) {
+    public UserInfoService(UserInfoRepository userInfoRepository, PasswordEncoder passwordEncoder) {
         this.userInfoRepository = userInfoRepository;
-        this.personRepository = personRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -38,7 +32,7 @@ public class UserInfoService implements UserDetailsService {
         Set<GrantedAuthority> authorities = Set.of(new SimpleGrantedAuthority(userInfo.getRole().toString()));
 
         return new ExtendedUser(
-                userInfo.getPerson() == null ? null : userInfo.getPerson().getId(),
+                userInfo.getPersonId(),
                 email,
                 userInfo.getHashedPassword(),
                 authorities
@@ -47,9 +41,8 @@ public class UserInfoService implements UserDetailsService {
 
     public void createUserInfo(String email, String password, Long personId) {
         try {
-            Optional<Person> person = personId == null ? Optional.empty() : personRepository.findById(personId);
             userInfoRepository.save(new UserInfo(email, passwordEncoder.encode(password),
-                    person.orElse(null)));
+                    personId));
         } catch (NonUniqueResultException e) {
             throw new EmailNotUnique(e.getMessage());
         }

@@ -3,19 +3,20 @@ package ru.pressstart9.petproject.api_ms.presentation.security;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import ru.pressstart9.petproject.commons.UserRole;
+import ru.pressstart9.petproject.api_ms.service.kafka.RequestProducer;
+import ru.pressstart9.petproject.api_ms.service.util.ExtendedUser;
+import ru.pressstart9.petproject.common_kafka.UserRole;
 import ru.pressstart9.petproject.dto.requests.FriendPairBody;
-import ru.pressstart9.petproject.service.util.ExtendedUser;
-import ru.pressstart9.petproject.service.PetService;
+import ru.pressstart9.petproject.dto.requests.GetRequest;
 
 import java.util.Objects;
 
 @Component("permission")
 public class AuthPermissionChecks {
-    private final PetService petService;
+    private final RequestProducer requestProducer;
 
-    public AuthPermissionChecks(PetService petService) {
-        this.petService = petService;
+    public AuthPermissionChecks(RequestProducer requestProducer) {
+        this.requestProducer = requestProducer;
     }
 
     public boolean isAdmin() {
@@ -48,7 +49,8 @@ public class AuthPermissionChecks {
             return false;
         }
 
-        return Objects.equals(((ExtendedUser) auth.getPrincipal()).getId(), petService.getPetDtoById(petId).getOwnerId());
+        return Objects.equals(((ExtendedUser) auth.getPrincipal()).getId(),
+                requestProducer.sendPetRequest(new GetRequest(petId)).getOwnerId());
     }
 
     public boolean isOwnerOfPair(FriendPairBody request) {

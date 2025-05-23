@@ -5,9 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import ru.pressstart9.petproject.commons.AvailableColor;
-import ru.pressstart9.petproject.domain.Person;
-import ru.pressstart9.petproject.domain.Pet;
+import ru.pressstart9.petproject.person_ms.domain.Person;
 
 import java.sql.Date;
 import java.util.List;
@@ -19,12 +17,9 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PersonDaoTests extends BaseTestContainer {
     @BeforeEach
     void setUp() {
-        petRepo.deleteAll();
         personRepo.deleteAll();
     }
 
-    @Autowired
-    PetRepository petRepo;
     @Autowired
     PersonRepository personRepo;
 
@@ -83,29 +78,8 @@ public class PersonDaoTests extends BaseTestContainer {
     public void testAddPet() {
         Person person = new Person("Person1", Date.valueOf("2025-01-01"));
 
-        Pet pet = new Pet("Pet1",
-                Date.valueOf("2025-01-01"),
-                "Siamese",
-                AvailableColor.black);
+        person.addPet(1L);
 
-        person.addPet(pet);
-
-        assertIterableEquals(List.of(pet), person.getPets());
-        assertEquals(person, pet.getOwner());
-    }
-
-    @Test
-    public void testAddSomeonesPet() {
-        Person person1 = new Person("Person1", Date.valueOf("2025-01-01"));
-
-        Person person2 = new Person("Person2", Date.valueOf("2025-01-01"));
-
-        Pet pet = new Pet("Pet1",
-                Date.valueOf("2025-01-01"),
-                "Siamese",
-                AvailableColor.black);
-
-        assertTrue(person1.addPet(pet));
-        assertFalse(person2.addPet(pet));
+        assertIterableEquals(List.of(1L), person.getPetIds());
     }
 }

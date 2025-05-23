@@ -5,28 +5,31 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.pressstart9.petproject.dto.auth.CreateAccountBody;
 import ru.pressstart9.petproject.dto.auth.LoginBody;
+import ru.pressstart9.petproject.dto.requests.CreatePersonBody;
+import ru.pressstart9.petproject.api_ms.service.kafka.RequestProducer;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     private final UserInfoService userInfoService;
-    private final PersonService personService;
+    private final RequestProducer requestProducer;
 
-    public AuthService(AuthenticationManager authenticationManager, UserInfoService userInfoService, PersonService personService) {
+    public AuthService(AuthenticationManager authenticationManager, UserInfoService userInfoService, RequestProducer requestProducer) {
         this.authenticationManager = authenticationManager;
         this.userInfoService = userInfoService;
-        this.personService = personService;
+        this.requestProducer = requestProducer;
     }
 
-    @Transactional
-    public Authentication createAccount(CreateAccountBody createAccountBody) {
-        Long personId = personService.createPerson(createAccountBody.getName(), createAccountBody.getBirthdate());
-        userInfoService.createUserInfo(createAccountBody.getEmail(), createAccountBody.getPassword(), personId);
-
+    public Authentication createAccount(CreateAccountBody createAccountBody) throws ExecutionException, InterruptedException {
+        var response = requestProducer.sendPersonRequest(
+                new CreatePersonBody(createAccountBody.getName(), createAccountBody.getBirthdate()));
+        userInfoService.createUserInfo(createAccountBody.getEmail(), createAccountBody.getPassword(), response.id);
         return login(new LoginBody(createAccountBody.getEmail(), createAccountBody.getPassword()));
     }
 

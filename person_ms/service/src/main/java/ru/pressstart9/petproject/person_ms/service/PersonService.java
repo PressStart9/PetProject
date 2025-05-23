@@ -1,15 +1,13 @@
 package ru.pressstart9.petproject.person_ms.service;
 
-import ru.pressstart9.petproject.commons.exceptions.EntityNotFound;
-import ru.pressstart9.petproject.dao.PersonRepository;
-import ru.pressstart9.petproject.domain.Person;
-import ru.pressstart9.petproject.domain.Pet;
+import ru.pressstart9.petproject.common_kafka.exceptions.EntityNotFound;
+import ru.pressstart9.petproject.person_ms.dao.PersonRepository;
+import ru.pressstart9.petproject.person_ms.domain.Person;
 import org.springframework.stereotype.Service;
-import ru.pressstart9.petproject.dto.responses.PersonDto;
+import ru.pressstart9.petproject.dto.PersonDto;
 
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PersonService {
@@ -28,6 +26,10 @@ public class PersonService {
         return convertToDto(getPersonById(id));
     }
 
+    public void removePetById(long ownerId, long petId) {
+        getPersonById(ownerId).removePet(petId);
+    }
+
     public List<PersonDto> getAllPeople() {
         List<Person> people = personRepository.findAll();
         return people.stream().map(PersonService::convertToDto).toList();
@@ -35,7 +37,7 @@ public class PersonService {
 
     public void deletePersonById(long id) {
         Person deletePerson = getPersonById(id);
-        deletePerson.getPets().forEach(deletePerson::removePet);
+        deletePerson.getPetIds().forEach(deletePerson::removePet);
         personRepository.deleteById(id);
     }
 
@@ -48,7 +50,7 @@ public class PersonService {
                 .id(person.getId())
                 .name(person.getName())
                 .birthdate(person.getBirthdate())
-                .petsIds(person.getPets().stream().map(Pet::getId).collect(Collectors.toSet()))
+                .petsIds(person.getPetIds())
                 .build();
     }
 }

@@ -2,7 +2,7 @@ package ru.pressstart9.petproject.api_ms.dao;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ru.pressstart9.petproject.commons.UserRole;
+import ru.pressstart9.petproject.common_kafka.UserRole;
 import ru.pressstart9.petproject.api_ms.domain.UserInfo;
 
 import java.util.List;

@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.pressstart9.petproject.commons.UserRole;
+import ru.pressstart9.petproject.common_kafka.UserRole;
 
 @Entity @Table(name = "user_info")
 @Getter @Setter
@@ -31,5 +31,5 @@ public class UserInfo {
     @Enumerated
     private UserRole role = UserRole.user;
 
-    private Long person = null;
+    private Long personId = null;
 }

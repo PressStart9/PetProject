@@ -4,37 +4,41 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
-import ru.pressstart9.petproject.dto.responses.PersonDto;
+import ru.pressstart9.petproject.api_ms.service.kafka.RequestProducer;
+import ru.pressstart9.petproject.dto.CreatedResponse;
+import ru.pressstart9.petproject.dto.requests.GetRequest;
+import ru.pressstart9.petproject.dto.PersonDto;
 import ru.pressstart9.petproject.dto.requests.CreatePersonBody;
-import ru.pressstart9.petproject.service.PersonService;
+
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/people")
 public class PersonController {
-    private final PersonService personService;
+    private final RequestProducer requestProducer;
 
-    public PersonController(PersonService personService) {
-        this.personService = personService;
+    public PersonController(RequestProducer requestProducer) {
+        this.requestProducer = requestProducer;
     }
 
     @PostMapping
     @PreAuthorize("@permission.isAdmin()")
-    public ResponseEntity<Long> createPerson(@Valid @RequestBody CreatePersonBody request) {
-        Long id = personService.createPerson(request.getName(), request.getBirthdate());
-        return ResponseEntity.status(HttpStatus.CREATED).body(id);
+    public ResponseEntity<Long> createPerson(@Valid @RequestBody CreatePersonBody request) throws ExecutionException, InterruptedException {
+        CreatedResponse response = requestProducer.sendPersonRequest(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response.id);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PersonDto> getPerson(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(personService.getPersonDtoById(id));
+        PersonDto response = requestProducer.sendPersonRequest(new GetRequest(id));
+        return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("@permission.isSelf(#id)")
-    public ResponseEntity<Void> deletePerson(@P("id") @PathVariable("id") Long id) {
-        personService.deletePersonById(id);
-        return ResponseEntity.noContent().build();
-    }
+//    @DeleteMapping("/{id}")
+//    @PreAuthorize("@permission.isSelf(#id)")
+//    public ResponseEntity<Void> deletePerson(@P("id") @PathVariable("id") Long id) {
+//        personService.deletePersonById(id);
+//        return ResponseEntity.noContent().build();
+//    }
 }
