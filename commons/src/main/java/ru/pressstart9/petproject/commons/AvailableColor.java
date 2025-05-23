@@ -1,4 +1,4 @@
-package ru.pressstart9.petproject.common_kafka;
+package ru.pressstart9.petproject.commons;
 
 public enum AvailableColor {
     black,

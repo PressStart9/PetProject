@@ -4,8 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import ru.pressstart9.petproject.common_kafka.exceptions.EmailNotUnique;
-import ru.pressstart9.petproject.common_kafka.exceptions.EntityNotFound;
+import ru.pressstart9.petproject.commons.exceptions.EmailNotUnique;
+import ru.pressstart9.petproject.commons.exceptions.EntityNotFound;
+import ru.pressstart9.petproject.commons.exceptions.ServiceNotResponding;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -20,4 +21,8 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(EmailNotUnique.class)
     public void handleEmailNotUniqueException() { }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(ServiceNotResponding.class)
+    public void handleServiceNotResponding() { }
 }

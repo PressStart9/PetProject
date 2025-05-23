@@ -1,10 +1,11 @@
 package ru.pressstart9.petproject.pet_ms.service;
 
 import org.springframework.data.domain.PageRequest;
-import ru.pressstart9.petproject.common_kafka.AvailableColor;
-import ru.pressstart9.petproject.common_kafka.exceptions.EntityNotFound;
-import ru.pressstart9.petproject.dto.PetDto;
-import ru.pressstart9.petproject.dto.requests.RemovePetRequest;
+import org.springframework.transaction.annotation.Transactional;
+import ru.pressstart9.petproject.commons.AvailableColor;
+import ru.pressstart9.petproject.commons.exceptions.EntityNotFound;
+import ru.pressstart9.petproject.commons.dto.responses.PetDto;
+import ru.pressstart9.petproject.commons.dto.requests.RemovePetRequest;
 import ru.pressstart9.petproject.pet_ms.dao.PetRepository;
 import ru.pressstart9.petproject.pet_ms.domain.Pet;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,6 @@ import ru.pressstart9.petproject.pet_ms.service.kafka.RequestProducer;
 
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +29,7 @@ public class PetService {
         return petRepository.save(new Pet(name, birthdate, breed, color)).getId();
     }
 
+    @Transactional
     public PetDto getPetDtoById(long id) {
         return convertToDto(getPetById(id));
     }
@@ -38,17 +39,19 @@ public class PetService {
         return pets.stream().map(PetService::convertToDto).toList();
     }
 
-    public CompletableFuture<Void> deletePetById(long id) {
+    @Transactional
+    public void deletePetById(long id) {
         Pet deletePet = getPetById(id);
 
-        return requestProducer.sendPersonRequest(new RemovePetRequest(deletePet.getOwnerId(), id))
-            .thenRun(() -> {
-                    deletePet.getFriends().forEach(deletePet::removeFriend);
-                    petRepository.deleteById(id);
-                }
-            );
+        if (deletePet.getOwnerId() != null) {
+            requestProducer.sendPersonRequest(new RemovePetRequest(deletePet.getOwnerId(), id));
+        }
+
+        deletePet.getFriends().forEach(deletePet::removeFriend);
+        petRepository.deleteById(id);
     }
 
+    @Transactional
     public List<PetDto> getByParams(String name, String breed,
                                     List<AvailableColor> colors, int size, int page) {
         return petRepository.findByParams(
@@ -61,16 +64,18 @@ public class PetService {
                 .toList();
     }
 
+    @Transactional
     public void addFriend(long petId, long friendId) {
         getPetById(petId).addFriend(getPetById(friendId));
     }
 
+    @Transactional
     public void removeFriend(long petId, long friendId) {
         getPetById(petId).removeFriend(getPetById(friendId));
     }
 
     private Pet getPetById(long id) {
-        return petRepository.findById(id).orElseThrow(() -> new EntityNotFound(id));
+        return petRepository.findById(id).orElseThrow(() -> new EntityNotFound(String.valueOf(id)));
     }
 
     public static PetDto convertToDto(Pet pet) {

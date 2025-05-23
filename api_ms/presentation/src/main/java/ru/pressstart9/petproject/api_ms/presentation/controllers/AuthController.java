@@ -6,13 +6,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import ru.pressstart9.petproject.dto.auth.CreateAccountBody;
-import ru.pressstart9.petproject.dto.auth.JwtAuthResponse;
-import ru.pressstart9.petproject.dto.auth.LoginBody;
+import ru.pressstart9.petproject.commons.dto.auth.CreateAccountBody;
+import ru.pressstart9.petproject.commons.dto.auth.JwtAuthResponse;
+import ru.pressstart9.petproject.commons.dto.auth.LoginBody;
 import ru.pressstart9.petproject.api_ms.service.AuthService;
 import ru.pressstart9.petproject.api_ms.presentation.security.JwtTokenProvider;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @RestController

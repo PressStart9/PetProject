@@ -1,4 +1,4 @@
-package ru.pressstart9.petproject.dto.auth;
+package ru.pressstart9.petproject.commons.dto.auth;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;

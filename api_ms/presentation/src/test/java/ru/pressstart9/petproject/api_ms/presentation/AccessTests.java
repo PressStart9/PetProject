@@ -16,7 +16,7 @@
 //import ru.pressstart9.petproject.api_ms.dto.requests.CreatePersonBody;
 //import ru.pressstart9.petproject.api_ms.dto.requests.CreatePetBody;
 //import ru.pressstart9.petproject.api_ms.dto.requests.FriendPairBody;
-//import ru.pressstart9.petproject.dto.PetDto;
+//import ru.pressstart9.petproject.dto.responses.PetDto;
 //import ru.pressstart9.petproject.api_ms.presentation.controllers.AuthController;
 //import ru.pressstart9.petproject.api_ms.presentation.controllers.PersonController;
 //import ru.pressstart9.petproject.api_ms.presentation.controllers.PetController;

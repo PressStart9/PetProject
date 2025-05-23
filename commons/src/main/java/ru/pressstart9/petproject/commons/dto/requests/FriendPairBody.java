@@ -1,4 +1,4 @@
-package ru.pressstart9.petproject.dto.requests;
+package ru.pressstart9.petproject.commons.dto.requests;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

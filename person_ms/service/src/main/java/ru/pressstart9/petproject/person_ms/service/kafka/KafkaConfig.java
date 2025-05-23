@@ -2,18 +2,11 @@ package ru.pressstart9.petproject.person_ms.service.kafka;
 
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.*;
-import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
-import ru.pressstart9.petproject.dto.BlankResponse;
-import ru.pressstart9.petproject.dto.CreatedResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,12 +24,7 @@ public class KafkaConfig {
     }
 
     @Bean
-    KafkaTemplate<String, BlankResponse> kafkaTemplateBlank(ProducerFactory<String, BlankResponse> producerFactory) {
-        return new KafkaTemplate<>(producerFactory);
-    }
-
-    @Bean
-    KafkaTemplate<String, CreatedResponse> kafkaTemplateCreated(ProducerFactory<String, CreatedResponse> producerFactory) {
+    KafkaTemplate<String, Object> kafkaTemplate(ProducerFactory<String, Object> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
     }
 

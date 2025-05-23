@@ -1,4 +1,4 @@
-package ru.pressstart9.petproject.dto;
+package ru.pressstart9.petproject.commons.dto.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

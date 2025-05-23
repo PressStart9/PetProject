@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.pressstart9.petproject.api_ms.service.util.ExtendedUser;
-import ru.pressstart9.petproject.common_kafka.exceptions.EmailNotUnique;
+import ru.pressstart9.petproject.commons.exceptions.EmailNotUnique;
 import ru.pressstart9.petproject.api_ms.dao.UserInfoRepository;
 import ru.pressstart9.petproject.api_ms.domain.UserInfo;
 import java.util.Set;

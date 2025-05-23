@@ -1,10 +1,10 @@
 package ru.pressstart9.petproject.person_ms.service;
 
-import ru.pressstart9.petproject.common_kafka.exceptions.EntityNotFound;
+import ru.pressstart9.petproject.commons.exceptions.EntityNotFound;
 import ru.pressstart9.petproject.person_ms.dao.PersonRepository;
 import ru.pressstart9.petproject.person_ms.domain.Person;
 import org.springframework.stereotype.Service;
-import ru.pressstart9.petproject.dto.PersonDto;
+import ru.pressstart9.petproject.commons.dto.responses.PersonDto;
 
 import java.util.Date;
 import java.util.List;
@@ -42,7 +42,7 @@ public class PersonService {
     }
 
     private Person getPersonById(long id) {
-        return personRepository.findById(id).orElseThrow(() -> new EntityNotFound(id));
+        return personRepository.findById(id).orElseThrow(() -> new EntityNotFound(String.valueOf(id)));
     }
 
     public static PersonDto convertToDto(Person person) {

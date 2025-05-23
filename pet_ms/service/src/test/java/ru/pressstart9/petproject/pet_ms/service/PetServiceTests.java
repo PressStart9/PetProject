@@ -6,19 +6,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.PageRequest;
-import ru.pressstart9.petproject.common_kafka.AvailableColor;
-import ru.pressstart9.petproject.common_kafka.exceptions.EntityNotFound;
-import ru.pressstart9.petproject.dto.BlankResponse;
+import ru.pressstart9.petproject.commons.AvailableColor;
+import ru.pressstart9.petproject.commons.exceptions.EntityNotFound;
 import ru.pressstart9.petproject.pet_ms.dao.PetRepository;
 import ru.pressstart9.petproject.pet_ms.domain.Pet;
-import ru.pressstart9.petproject.dto.PetDto;
+import ru.pressstart9.petproject.commons.dto.responses.PetDto;
 import ru.pressstart9.petproject.pet_ms.service.kafka.RequestProducer;
 
 import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -26,7 +23,6 @@ import static org.mockito.Mockito.*;
 public class PetServiceTests {
     @Mock
     private PetRepository petRepo;
-
     @Mock
     private RequestProducer requestProducer;
 
@@ -94,7 +90,7 @@ public class PetServiceTests {
     }
 
     @Test
-    void testDeletePetById() throws ExecutionException, InterruptedException {
+    void testDeletePetById() {
         Pet pet = new Pet("Barsik",
                 Date.valueOf("2025-01-01"),
                 "Siamese",
@@ -102,9 +98,8 @@ public class PetServiceTests {
         pet.setId(1L);
 
         when(petRepo.findById(1L)).thenReturn(Optional.of(pet));
-        when(requestProducer.sendPersonRequest(any())).thenReturn(CompletableFuture.completedFuture(new BlankResponse()));
 
-        petServ.deletePetById(1L).get();
+        petServ.deletePetById(1L);
         verify(petRepo, times(1)).deleteById(1L);
     }
 

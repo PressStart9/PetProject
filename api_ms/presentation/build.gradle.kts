@@ -6,7 +6,6 @@ plugins {
 
 dependencies {
     implementation(project(":commons"))
-    implementation(project(":common_dtos"))
     implementation(project(":api_ms:service"))
 
     implementation("io.jsonwebtoken:jjwt-api:0.12.6")

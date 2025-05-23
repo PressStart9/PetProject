@@ -1,10 +1,10 @@
-package ru.pressstart9.petproject.dto;
+package ru.pressstart9.petproject.commons.dto.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.pressstart9.petproject.common_kafka.AvailableColor;
+import ru.pressstart9.petproject.commons.AvailableColor;
 
 import java.util.Date;
 import java.util.Set;

@@ -1,4 +1,4 @@
-package ru.pressstart9.petproject.common_kafka.exceptions;
+package ru.pressstart9.petproject.commons.exceptions;
 
 public class EmailNotUnique extends RuntimeException {
     public EmailNotUnique(String message) {

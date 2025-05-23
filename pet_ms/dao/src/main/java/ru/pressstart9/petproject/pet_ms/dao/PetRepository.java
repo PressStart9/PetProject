@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import ru.pressstart9.petproject.common_kafka.AvailableColor;
+import ru.pressstart9.petproject.commons.AvailableColor;
 import ru.pressstart9.petproject.pet_ms.domain.Pet;
 
 import java.util.List;

@@ -2,7 +2,7 @@ package ru.pressstart9.petproject.pet_ms.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ru.pressstart9.petproject.common_kafka.AvailableColor;
+import ru.pressstart9.petproject.commons.AvailableColor;
 
 import java.util.Date;
 import java.util.HashSet;

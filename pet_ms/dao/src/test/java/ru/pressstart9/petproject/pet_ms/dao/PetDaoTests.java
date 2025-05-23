@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import ru.pressstart9.petproject.common_kafka.AvailableColor;
+import ru.pressstart9.petproject.commons.AvailableColor;
 import ru.pressstart9.petproject.pet_ms.domain.Pet;
 
 import java.sql.Date;

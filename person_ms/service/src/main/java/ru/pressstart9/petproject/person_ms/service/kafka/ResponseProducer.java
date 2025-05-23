@@ -8,42 +8,82 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
-import ru.pressstart9.petproject.dto.BlankResponse;
-import ru.pressstart9.petproject.dto.CreatedResponse;
-import ru.pressstart9.petproject.dto.requests.CreatePersonBody;
-import ru.pressstart9.petproject.dto.requests.RemovePetRequest;
+import ru.pressstart9.petproject.commons.dto.requests.DeleteRequest;
+import ru.pressstart9.petproject.commons.dto.requests.GetRequest;
+import ru.pressstart9.petproject.commons.dto.responses.BlankResponse;
+import ru.pressstart9.petproject.commons.dto.responses.CreatedResponse;
+import ru.pressstart9.petproject.commons.dto.requests.CreatePersonBody;
+import ru.pressstart9.petproject.commons.dto.requests.RemovePetRequest;
+import ru.pressstart9.petproject.commons.dto.responses.PersonDto;
 import ru.pressstart9.petproject.person_ms.service.PersonService;
 
 @Component
 @KafkaListener(topics = "person-requests", groupId = "person-group")
 public class ResponseProducer {
-    private final KafkaTemplate<String, BlankResponse> kafkaTemplateBlank;
-    private final KafkaTemplate<String, CreatedResponse> kafkaTemplateCreated;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
     private final PersonService personService;
 
-    public ResponseProducer(KafkaTemplate<String, BlankResponse> kafkaTemplateBlank, KafkaTemplate<String, CreatedResponse> kafkaTemplateCreated, PersonService personService) {
-        this.kafkaTemplateBlank = kafkaTemplateBlank;
-        this.kafkaTemplateCreated = kafkaTemplateCreated;
+    public ResponseProducer(KafkaTemplate<String, Object> kafkaTemplate, PersonService personService) {
+        this.kafkaTemplate = kafkaTemplate;
         this.personService = personService;
     }
 
     @KafkaHandler
     public void consumePersonResponse(@Header(KafkaHeaders.REPLY_TOPIC) String replyTopic, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationId, @Payload CreatePersonBody data) {
-        Long result = personService.createPerson(data.getName(), data.getBirthdate());
+        try {
+            Long result = personService.createPerson(data.getName(), data.getBirthdate());
 
-        ProducerRecord<String, CreatedResponse> reply = new ProducerRecord<>(replyTopic, new CreatedResponse(result));
-        reply.headers().add(new RecordHeader(KafkaHeaders.CORRELATION_ID, correlationId));
-        kafkaTemplateCreated.send(reply);
+            reply(replyTopic, correlationId, new CreatedResponse(result));
+        } catch (Exception e) {
+            exceptionallyReply(replyTopic, correlationId, e, new CreatedResponse());
+        }
     }
 
     @KafkaHandler
-    public void consumePersonResponse(@Header(KafkaHeaders.REPLY_TOPIC) String replyTopic, @Header(KafkaHeaders.CORRELATION_ID) String correlationId, @Payload RemovePetRequest data) {
-        personService.removePetById(data.ownerId, data.petId);
+    public void consumePersonResponse(@Header(KafkaHeaders.REPLY_TOPIC) String replyTopic, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationId, @Payload GetRequest data) {
+        try {
+            PersonDto result = personService.getPersonDtoById(data.getId());
 
-        ProducerRecord<String, BlankResponse> reply = new ProducerRecord<>(replyTopic, new BlankResponse());
-        reply.headers().add(new RecordHeader(KafkaHeaders.CORRELATION_ID, correlationId.getBytes()));
-        kafkaTemplateBlank.send(reply);
+            reply(replyTopic, correlationId, result);
+        } catch (Exception e) {
+            exceptionallyReply(replyTopic, correlationId, e, new PersonDto());
+        }
+    }
+
+    @KafkaHandler
+    public void consumePersonResponse(@Header(KafkaHeaders.REPLY_TOPIC) String replyTopic, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationId, @Payload DeleteRequest data) {
+        try {
+            personService.deletePersonById(data.getId());
+
+            reply(replyTopic, correlationId, new BlankResponse());
+        } catch (Exception e) {
+            exceptionallyReply(replyTopic, correlationId, e, new BlankResponse());
+        }
+    }
+
+    @KafkaHandler
+    public void consumePersonResponse(@Header(KafkaHeaders.REPLY_TOPIC) String replyTopic, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationId, @Payload RemovePetRequest data) {
+        try {
+            personService.removePetById(data.ownerId, data.petId);
+
+            reply(replyTopic, correlationId, new BlankResponse());
+        } catch (Exception e) {
+            exceptionallyReply(replyTopic, correlationId, e, new BlankResponse());
+        }
+    }
+
+    private void reply(String replyTopicName, byte[] correlationId, Object data) {
+        ProducerRecord<String, Object> reply = new ProducerRecord<>(replyTopicName, data);
+        reply.headers().add(new RecordHeader(KafkaHeaders.CORRELATION_ID, correlationId));
+        kafkaTemplate.send(reply);
+    }
+
+    private void exceptionallyReply(String replyTopicName, byte[] correlationId, Exception e, Object data) {
+        ProducerRecord<String, Object> reply = new ProducerRecord<>(replyTopicName, data);
+        reply.headers().add(new RecordHeader(KafkaHeaders.CORRELATION_ID, correlationId));
+        reply.headers().add(new RecordHeader(KafkaHeaders.EXCEPTION_FQCN, e.getClass().getTypeName().getBytes()));
+        reply.headers().add(new RecordHeader(KafkaHeaders.EXCEPTION_MESSAGE, e.getMessage().getBytes()));
+        kafkaTemplate.send(reply);
     }
 }

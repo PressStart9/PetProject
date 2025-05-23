@@ -4,7 +4,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import ru.pressstart9.petproject.common_kafka.UserRole;
+import ru.pressstart9.petproject.commons.UserRole;
 import ru.pressstart9.petproject.api_ms.dao.UserInfoRepository;
 import ru.pressstart9.petproject.api_ms.domain.UserInfo;
 

@@ -12,7 +12,7 @@
 //import org.springframework.test.web.servlet.MockMvc;
 //import ru.pressstart9.petproject.common_kafka.exceptions.EntityNotFound;
 //import ru.pressstart9.petproject.api_ms.dto.requests.CreatePersonBody;
-//import ru.pressstart9.petproject.dto.PersonDto;
+//import ru.pressstart9.petproject.dto.responses.PersonDto;
 //import ru.pressstart9.petproject.api_ms.presentation.controllers.PersonController;
 //import ru.pressstart9.petproject.api_ms.service.AuthService;
 //import ru.pressstart9.petproject.api_ms.service.UserInfoService;

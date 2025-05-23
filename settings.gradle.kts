@@ -1,7 +1,6 @@
 rootProject.name = "pet-project"
 
 include(":commons")
-include(":common_dtos")
 
 include(":api_ms:presentation")
 include(":api_ms:service")

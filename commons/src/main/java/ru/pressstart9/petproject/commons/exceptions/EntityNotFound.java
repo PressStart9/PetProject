@@ -1,7 +1,7 @@
-package ru.pressstart9.petproject.common_kafka.exceptions;
+package ru.pressstart9.petproject.commons.exceptions;
 
 public class EntityNotFound extends RuntimeException {
-    public EntityNotFound(Long id) {
+    public EntityNotFound(String id) {
         super("There is no entity with id = " + id);
     }
 }

@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import ru.pressstart9.petproject.common_kafka.exceptions.EntityNotFound;
+import ru.pressstart9.petproject.commons.exceptions.EntityNotFound;
 import ru.pressstart9.petproject.person_ms.dao.PersonRepository;
 import ru.pressstart9.petproject.person_ms.domain.Person;
-import ru.pressstart9.petproject.dto.PersonDto;
+import ru.pressstart9.petproject.commons.dto.responses.PersonDto;
 
 import java.sql.Date;
 import java.util.List;

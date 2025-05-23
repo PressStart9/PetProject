@@ -14,7 +14,7 @@
 //import org.springframework.test.web.servlet.MockMvc;
 //import ru.pressstart9.petproject.common_kafka.AvailableColor;
 //import ru.pressstart9.petproject.common_kafka.exceptions.EntityNotFound;
-//import ru.pressstart9.petproject.dto.PetDto;
+//import ru.pressstart9.petproject.dto.responses.PetDto;
 //import ru.pressstart9.petproject.dto.requests.CreatePetBody;
 //import ru.pressstart9.petproject.dto.requests.FriendPairBody;
 //import ru.pressstart9.petproject.presentation.controllers.PetController;

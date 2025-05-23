@@ -6,7 +6,6 @@ plugins {
 
 dependencies {
     implementation(project(":commons"))
-    implementation(project(":common_dtos"))
     implementation(project(":api_ms:domain"))
     implementation(project(":api_ms:dao"))
 

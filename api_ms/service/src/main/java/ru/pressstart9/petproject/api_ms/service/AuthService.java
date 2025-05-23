@@ -5,13 +5,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import ru.pressstart9.petproject.dto.auth.CreateAccountBody;
-import ru.pressstart9.petproject.dto.auth.LoginBody;
-import ru.pressstart9.petproject.dto.requests.CreatePersonBody;
+import ru.pressstart9.petproject.commons.dto.auth.CreateAccountBody;
+import ru.pressstart9.petproject.commons.dto.auth.LoginBody;
+import ru.pressstart9.petproject.commons.dto.requests.CreatePersonBody;
 import ru.pressstart9.petproject.api_ms.service.kafka.RequestProducer;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 @Service
 public class AuthService {
@@ -26,7 +23,7 @@ public class AuthService {
         this.requestProducer = requestProducer;
     }
 
-    public Authentication createAccount(CreateAccountBody createAccountBody) throws ExecutionException, InterruptedException {
+    public Authentication createAccount(CreateAccountBody createAccountBody) {
         var response = requestProducer.sendPersonRequest(
                 new CreatePersonBody(createAccountBody.getName(), createAccountBody.getBirthdate()));
         userInfoService.createUserInfo(createAccountBody.getEmail(), createAccountBody.getPassword(), response.id);

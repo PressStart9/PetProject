@@ -12,13 +12,6 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
-import ru.pressstart9.petproject.dto.BlankResponse;
-import ru.pressstart9.petproject.dto.CreatedResponse;
-import ru.pressstart9.petproject.dto.PersonDto;
-import ru.pressstart9.petproject.dto.PetDto;
-import ru.pressstart9.petproject.dto.requests.CreatePersonBody;
-import ru.pressstart9.petproject.dto.requests.GetRequest;
-import ru.pressstart9.petproject.dto.requests.RemovePetRequest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,31 +29,7 @@ public class KafkaConfig {
     }
 
     @Bean
-    public ConcurrentMessageListenerContainer<String, CreatedResponse> replyContainerCreated(
-            ConsumerFactory<String, CreatedResponse> cf) {
-        ContainerProperties containerProperties = new ContainerProperties("api-responses");
-        containerProperties.setGroupId("api-group");
-        return new ConcurrentMessageListenerContainer<>(cf, containerProperties);
-    }
-
-    @Bean
-    public ConcurrentMessageListenerContainer<String, BlankResponse> replyContainerBlank(
-            ConsumerFactory<String, BlankResponse> cf) {
-        ContainerProperties containerProperties = new ContainerProperties("api-responses");
-        containerProperties.setGroupId("api-group");
-        return new ConcurrentMessageListenerContainer<>(cf, containerProperties);
-    }
-
-    @Bean
-    public ConcurrentMessageListenerContainer<String, PersonDto> replyContainerPersonDto(
-            ConsumerFactory<String, PersonDto> cf) {
-        ContainerProperties containerProperties = new ContainerProperties("api-responses");
-        containerProperties.setGroupId("api-group");
-        return new ConcurrentMessageListenerContainer<>(cf, containerProperties);
-    }
-
-    @Bean
-    public ConcurrentMessageListenerContainer<String, PetDto> replyContainerPetDto(
+    public ConcurrentMessageListenerContainer<String, Object> replyContainer(
             ConsumerFactory<String, Object> cf) {
         ContainerProperties containerProperties = new ContainerProperties("api-responses");
         containerProperties.setGroupId("api-group");
@@ -68,30 +37,9 @@ public class KafkaConfig {
     }
 
     @Bean
-    public ReplyingKafkaTemplate<String, CreatePersonBody, CreatedResponse> replyingKafkaTemplateCreatePerson(
-            ProducerFactory<String, CreatePersonBody> pf,
-            ConcurrentMessageListenerContainer<String, CreatedResponse> container) {
-        return new ReplyingKafkaTemplate<>(pf, container);
-    }
-
-    @Bean
-    public ReplyingKafkaTemplate<String, RemovePetRequest, BlankResponse> replyingKafkaTemplateRemovePet(
-            ProducerFactory<String, RemovePetRequest> pf,
-            ConcurrentMessageListenerContainer<String, BlankResponse> container) {
-        return new ReplyingKafkaTemplate<>(pf, container);
-    }
-
-    @Bean
-    public ReplyingKafkaTemplate<String, GetRequest, PersonDto> replyingKafkaTemplateGetPerson(
-            ProducerFactory<String, GetRequest> pf,
-            ConcurrentMessageListenerContainer<String, PersonDto> container) {
-        return new ReplyingKafkaTemplate<>(pf, container);
-    }
-
-    @Bean
-    public ReplyingKafkaTemplate<String, GetRequest, PetDto> replyingKafkaTemplateGetPet(
-            ProducerFactory<String, GetRequest> pf,
-            ConcurrentMessageListenerContainer<String, PetDto> container) {
+    public ReplyingKafkaTemplate<String, Object, Object> replyingKafkaTemplate(
+            ProducerFactory<String, Object> pf,
+            ConcurrentMessageListenerContainer<String, Object> container) {
         return new ReplyingKafkaTemplate<>(pf, container);
     }
 
