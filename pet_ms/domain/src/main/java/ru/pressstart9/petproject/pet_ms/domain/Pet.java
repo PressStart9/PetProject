@@ -19,22 +19,29 @@ public class Pet {
         this.breed = breed;
         this.color = color;
     }
+    public Pet(String name, Date birthdate, String breed, AvailableColor color, Long ownerId) {
+        this.name = name;
+        this.birthdate = birthdate;
+        this.breed = breed;
+        this.color = color;
+        this.ownerId = ownerId;
+    }
 
     @EqualsAndHashCode.Include
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    public Long id;
 
-    private String name;
-    private Date birthdate;
-    private String breed;
+    public String name;
+    public Date birthdate;
+    public String breed;
 
     @Enumerated
-    private AvailableColor color;
+    public AvailableColor color;
 
-    private Long ownerId;
+    public Long ownerId;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    private Set<Pet> friends = new HashSet<>();
+    public Set<Pet> friends = new HashSet<>();
 
     public void addFriend(Pet friend) {
         if (this == friend) {

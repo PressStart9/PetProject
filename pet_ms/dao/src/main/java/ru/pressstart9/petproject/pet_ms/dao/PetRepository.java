@@ -19,4 +19,6 @@ public interface PetRepository extends JpaRepository<Pet, Long> {
                            @Param("breed") String breed,
                            @Param("color") List<AvailableColor> color,
                            Pageable pageable);
+
+    List<Pet> findByOwnerId(Long ownerId);
 }

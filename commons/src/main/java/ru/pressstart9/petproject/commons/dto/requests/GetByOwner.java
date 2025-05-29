@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RemovePetRequest {
+public class GetByOwner {
     public Long ownerId;
-    public Long petId;
 }

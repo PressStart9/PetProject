@@ -38,8 +38,8 @@ public class AuthPermissionChecks {
         Boolean check = checkRole(auth);
         if (check != null) { return check; }
 
-        return Objects.equals(((ExtendedUser) auth.getPrincipal()).getId(),
-                requestProducer.sendPetRequest(new GetRequest(petId)).getOwnerId());
+        Long id = requestProducer.sendPetRequest(new GetRequest(petId)).getOwnerId();
+        return Objects.equals(((ExtendedUser) auth.getPrincipal()).getId(), id);
     }
 
     public boolean isOwnerOfPair(FriendPairBody request) {

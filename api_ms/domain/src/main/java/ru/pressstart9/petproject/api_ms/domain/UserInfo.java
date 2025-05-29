@@ -20,6 +20,7 @@ public class UserInfo {
     public UserInfo(String email, String hashedPassword, Long personId) {
         this.email = email;
         this.hashedPassword = hashedPassword;
+        this.personId = personId;
     }
 
     @Id

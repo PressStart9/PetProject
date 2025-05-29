@@ -35,7 +35,7 @@ public class PersonServiceTests {
                 Date.valueOf("2025-01-01"));
         person.setId(1L);
 
-        PersonDto personDto = PersonService.convertToDto(person);
+        PersonDto personDto = personServ.convertToDto(person);
 
         when(personRepo.save(any(Person.class))).thenReturn(person);
         when(personRepo.findById(1L)).thenReturn(Optional.of(person));

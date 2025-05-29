@@ -3,9 +3,10 @@ package ru.pressstart9.petproject.pet_ms.service;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pressstart9.petproject.commons.AvailableColor;
+import ru.pressstart9.petproject.commons.dto.requests.AddPetRequest;
 import ru.pressstart9.petproject.commons.exceptions.EntityNotFound;
 import ru.pressstart9.petproject.commons.dto.responses.PetDto;
-import ru.pressstart9.petproject.commons.dto.requests.RemovePetRequest;
+import ru.pressstart9.petproject.commons.dto.requests.RemovePetOwnner;
 import ru.pressstart9.petproject.pet_ms.dao.PetRepository;
 import ru.pressstart9.petproject.pet_ms.domain.Pet;
 import org.springframework.stereotype.Service;
@@ -25,8 +26,13 @@ public class PetService {
         this.requestProducer = requestProducer;
     }
 
-    public Long createPet(String name, Date birthdate, String breed, AvailableColor color) {
-        return petRepository.save(new Pet(name, birthdate, breed, color)).getId();
+    public Long createPet(String name, Date birthdate, String breed, AvailableColor color, Long ownerId) {
+        Long id = petRepository.save(new Pet(name, birthdate, breed, color, ownerId)).getId();
+        if (ownerId != null) {
+            requestProducer.sendPersonRequest(new AddPetRequest(ownerId, id));
+        }
+
+        return id;
     }
 
     @Transactional
@@ -34,9 +40,33 @@ public class PetService {
         return convertToDto(getPetById(id));
     }
 
+    public void removePetById(long ownerId, long petId) {
+        Pet pet = getPetById(petId);
+        pet.ownerId = null;
+        petRepository.save(pet);
+    }
+
+    public void addPetById(long ownerId, long petId) {
+        Pet pet = getPetById(petId);
+        pet.ownerId = ownerId;
+        petRepository.save(pet);
+    }
+
     public List<PetDto> getAllPets() {
         List<Pet> pets = petRepository.findAll();
         return pets.stream().map(PetService::convertToDto).toList();
+    }
+
+    public List<Long> getByOwner(Long ownerId) {
+        List<Pet> pets = petRepository.findByOwnerId(ownerId);
+        return pets.stream().map(Pet::getId).toList();
+    }
+
+    public void removePetOwner(Long ownerId) {
+        List<Pet> pets = petRepository.findByOwnerId(ownerId);
+        for (var pet : pets) {
+            pet.ownerId = null;
+        }
     }
 
     @Transactional
@@ -44,7 +74,7 @@ public class PetService {
         Pet deletePet = getPetById(id);
 
         if (deletePet.getOwnerId() != null) {
-            requestProducer.sendPersonRequest(new RemovePetRequest(deletePet.getOwnerId(), id));
+            requestProducer.sendPersonRequest(new RemovePetOwnner(deletePet.getOwnerId(), id));
         }
 
         deletePet.getFriends().forEach(deletePet::removeFriend);

@@ -30,9 +30,31 @@ public class ResponseProducer {
     }
 
     @KafkaHandler
+    public void consumePersonResponse(@Header(value = KafkaHeaders.REPLY_TOPIC, required = false) String replyTopic, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationId, @Payload RemovePetOwnner data) {
+        try {
+            petService.removePetById(data.ownerId, data.petId);
+
+            reply(replyTopic, correlationId, new BlankResponse());
+        } catch (Exception e) {
+            exceptionallyReply(replyTopic, correlationId, e, new BlankResponse());
+        }
+    }
+
+    @KafkaHandler
+    public void consumePersonResponse(@Header(value = KafkaHeaders.REPLY_TOPIC, required = false) String replyTopic, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationId, @Payload AddPetRequest data) {
+        try {
+            petService.addPetById(data.ownerId, data.petId);
+
+            reply(replyTopic, correlationId, new BlankResponse());
+        } catch (Exception e) {
+            exceptionallyReply(replyTopic, correlationId, e, new BlankResponse());
+        }
+    }
+
+    @KafkaHandler
     public void consumePetResponse(@Header(KafkaHeaders.REPLY_TOPIC) String replyTopic, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationId, @Payload CreatePetBody data) {
         try {
-            Long result = petService.createPet(data.getName(), data.getBirthdate(), data.getBreed(), AvailableColor.valueOf(data.getColor()));
+            Long result = petService.createPet(data.getName(), data.getBirthdate(), data.getBreed(), AvailableColor.valueOf(data.getColor()), data.getOwnerId());
 
             reply(replyTopic, correlationId, new CreatedResponse(result));
         } catch (Exception e) {
@@ -52,7 +74,7 @@ public class ResponseProducer {
     }
 
     @KafkaHandler
-    public void consumePetResponse(@Header(KafkaHeaders.REPLY_TOPIC) String replyTopic, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationId, @Payload DeleteRequest data) {
+    public void consumePetResponse(@Header(value = KafkaHeaders.REPLY_TOPIC, required = false) String replyTopic, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationId, @Payload DeleteRequest data) {
         try {
             petService.deletePetById(data.getId());
 
@@ -63,7 +85,7 @@ public class ResponseProducer {
     }
 
     @KafkaHandler
-    public void consumePetResponse(@Header(KafkaHeaders.REPLY_TOPIC) String replyTopic, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationId, @Payload FriendPairBody data) {
+    public void consumePetResponse(@Header(value = KafkaHeaders.REPLY_TOPIC, required = false) String replyTopic, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationId, @Payload FriendPairBody data) {
         try {
             petService.addFriend(data.getPetId(), data.getFriendId());
 
@@ -77,6 +99,28 @@ public class ResponseProducer {
     public void consumePetResponse(@Header(KafkaHeaders.REPLY_TOPIC) String replyTopic, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationId, @Payload RemoveFriendPair data) {
         try {
             petService.removeFriend(data.getPetId(), data.getFriendId());
+
+            reply(replyTopic, correlationId, new BlankResponse());
+        } catch (Exception e) {
+            exceptionallyReply(replyTopic, correlationId, e, new BlankResponse());
+        }
+    }
+
+    @KafkaHandler
+    public void consumePetResponse(@Header(KafkaHeaders.REPLY_TOPIC) String replyTopic, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationId, @Payload GetByOwner data) {
+        try {
+            List<Long> result = petService.getByOwner(data.getOwnerId());
+
+            reply(replyTopic, correlationId, result);
+        } catch (Exception e) {
+            exceptionallyReply(replyTopic, correlationId, e, List.of());
+        }
+    }
+
+    @KafkaHandler
+    public void consumePetResponse(@Header(KafkaHeaders.REPLY_TOPIC) String replyTopic, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationId, @Payload RemovePetOwner data) {
+        try {
+            petService.removePetOwner(data.getOwnerId());
 
             reply(replyTopic, correlationId, new BlankResponse());
         } catch (Exception e) {
@@ -102,6 +146,9 @@ public class ResponseProducer {
     }
 
     private void reply(String replyTopicName, byte[] correlationId, Object data) {
+        if (replyTopicName == null || replyTopicName.isEmpty()) {
+            return;
+        }
         ProducerRecord<String, Object> reply = new ProducerRecord<>(replyTopicName, data);
         reply.headers().add(new RecordHeader(KafkaHeaders.CORRELATION_ID, correlationId));
         kafkaTemplate.send(reply);

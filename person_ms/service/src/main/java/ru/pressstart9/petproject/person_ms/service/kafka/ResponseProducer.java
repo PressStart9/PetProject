@@ -9,12 +9,9 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
-import ru.pressstart9.petproject.commons.dto.requests.DeleteRequest;
-import ru.pressstart9.petproject.commons.dto.requests.GetRequest;
+import ru.pressstart9.petproject.commons.dto.requests.*;
 import ru.pressstart9.petproject.commons.dto.responses.BlankResponse;
 import ru.pressstart9.petproject.commons.dto.responses.CreatedResponse;
-import ru.pressstart9.petproject.commons.dto.requests.CreatePersonBody;
-import ru.pressstart9.petproject.commons.dto.requests.RemovePetRequest;
 import ru.pressstart9.petproject.commons.dto.responses.PersonDto;
 import ru.pressstart9.petproject.person_ms.service.PersonService;
 
@@ -52,7 +49,7 @@ public class ResponseProducer {
     }
 
     @KafkaHandler
-    public void consumePersonResponse(@Header(KafkaHeaders.REPLY_TOPIC) String replyTopic, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationId, @Payload DeleteRequest data) {
+    public void consumePersonResponse(@Header(value = KafkaHeaders.REPLY_TOPIC, required = false) String replyTopic, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationId, @Payload DeleteRequest data) {
         try {
             personService.deletePersonById(data.getId());
 
@@ -62,18 +59,10 @@ public class ResponseProducer {
         }
     }
 
-    @KafkaHandler
-    public void consumePersonResponse(@Header(KafkaHeaders.REPLY_TOPIC) String replyTopic, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationId, @Payload RemovePetRequest data) {
-        try {
-            personService.removePetById(data.ownerId, data.petId);
-
-            reply(replyTopic, correlationId, new BlankResponse());
-        } catch (Exception e) {
-            exceptionallyReply(replyTopic, correlationId, e, new BlankResponse());
-        }
-    }
-
     private void reply(String replyTopicName, byte[] correlationId, Object data) {
+        if (replyTopicName == null || replyTopicName.isEmpty()) {
+            return;
+        }
         ProducerRecord<String, Object> reply = new ProducerRecord<>(replyTopicName, data);
         reply.headers().add(new RecordHeader(KafkaHeaders.CORRELATION_ID, correlationId));
         kafkaTemplate.send(reply);

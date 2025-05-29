@@ -23,14 +23,4 @@ public class Person {
 
     private String name;
     private Date birthdate;
-
-    private Set<Long> petIds = new HashSet<>();
-
-    public void addPet(Long petId) {
-        petIds.add(petId);
-    }
-
-    public void removePet(Long petId) {
-        petIds.remove(petId);
-    }
 }

@@ -47,7 +47,7 @@ public class PetServiceTests {
         when(petRepo.save(any(Pet.class))).thenReturn(pet);
         when(petRepo.findById(1L)).thenReturn(Optional.of(pet));
 
-        Long id = petServ.createPet(petDto.getName(), petDto.getBirthdate(), petDto.getBreed(), petDto.getColor());
+        Long id = petServ.createPet(petDto.getName(), petDto.getBirthdate(), petDto.getBreed(), petDto.getColor(), null);
 
         PetDto createdPet = petServ.getPetDtoById(id);
         assertNotNull(createdPet);
