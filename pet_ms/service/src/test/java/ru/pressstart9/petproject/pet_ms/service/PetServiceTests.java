@@ -11,7 +11,6 @@ import ru.pressstart9.petproject.commons.exceptions.EntityNotFound;
 import ru.pressstart9.petproject.pet_ms.dao.PetRepository;
 import ru.pressstart9.petproject.pet_ms.domain.Pet;
 import ru.pressstart9.petproject.commons.dto.responses.PetDto;
-import ru.pressstart9.petproject.pet_ms.service.kafka.RequestProducer;
 
 import java.sql.Date;
 import java.util.List;
@@ -23,8 +22,6 @@ import static org.mockito.Mockito.*;
 public class PetServiceTests {
     @Mock
     private PetRepository petRepo;
-    @Mock
-    private RequestProducer requestProducer;
 
     @InjectMocks
     private PetService petServ;

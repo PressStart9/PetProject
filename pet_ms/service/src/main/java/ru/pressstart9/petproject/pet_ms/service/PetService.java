@@ -3,14 +3,11 @@ package ru.pressstart9.petproject.pet_ms.service;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pressstart9.petproject.commons.AvailableColor;
-import ru.pressstart9.petproject.commons.dto.requests.AddPetRequest;
 import ru.pressstart9.petproject.commons.exceptions.EntityNotFound;
 import ru.pressstart9.petproject.commons.dto.responses.PetDto;
-import ru.pressstart9.petproject.commons.dto.requests.RemovePetOwnner;
 import ru.pressstart9.petproject.pet_ms.dao.PetRepository;
 import ru.pressstart9.petproject.pet_ms.domain.Pet;
 import org.springframework.stereotype.Service;
-import ru.pressstart9.petproject.pet_ms.service.kafka.RequestProducer;
 
 import java.util.Date;
 import java.util.List;
@@ -19,18 +16,13 @@ import java.util.stream.Collectors;
 @Service
 public class PetService {
     private final PetRepository petRepository;
-    private final RequestProducer requestProducer;
 
-    public PetService(PetRepository petRepository, RequestProducer requestProducer) {
+    public PetService(PetRepository petRepository) {
         this.petRepository = petRepository;
-        this.requestProducer = requestProducer;
     }
 
     public Long createPet(String name, Date birthdate, String breed, AvailableColor color, Long ownerId) {
         Long id = petRepository.save(new Pet(name, birthdate, breed, color, ownerId)).getId();
-        if (ownerId != null) {
-            requestProducer.sendPersonRequest(new AddPetRequest(ownerId, id));
-        }
 
         return id;
     }
@@ -66,16 +58,13 @@ public class PetService {
         List<Pet> pets = petRepository.findByOwnerId(ownerId);
         for (var pet : pets) {
             pet.ownerId = null;
+            petRepository.save(pet);
         }
     }
 
     @Transactional
     public void deletePetById(long id) {
         Pet deletePet = getPetById(id);
-
-        if (deletePet.getOwnerId() != null) {
-            requestProducer.sendPersonRequest(new RemovePetOwnner(deletePet.getOwnerId(), id));
-        }
 
         deletePet.getFriends().forEach(deletePet::removeFriend);
         petRepository.deleteById(id);

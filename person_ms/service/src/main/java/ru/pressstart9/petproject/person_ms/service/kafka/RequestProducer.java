@@ -12,8 +12,7 @@ import org.springframework.kafka.requestreply.RequestReplyFuture;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.stereotype.Component;
 import ru.pressstart9.petproject.commons.dto.requests.GetByOwner;
-import ru.pressstart9.petproject.commons.dto.requests.RemovePetOwner;
-import ru.pressstart9.petproject.commons.dto.requests.RemovePetOwnner;
+import ru.pressstart9.petproject.commons.dto.requests.RemovePetsOwner;
 import ru.pressstart9.petproject.commons.exceptions.ServiceNotResponding;
 
 import java.lang.reflect.Constructor;
@@ -36,7 +35,7 @@ public class RequestProducer {
         this.replyingKafkaTemplate = replyingKafkaTemplate;
     }
 
-    public void sendPetRequest(RemovePetOwner data) {
+    public void sendPetRequest(RemovePetsOwner data) {
         send("pet-requests", data);
     }
 

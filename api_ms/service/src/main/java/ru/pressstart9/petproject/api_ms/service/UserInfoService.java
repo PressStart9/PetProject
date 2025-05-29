@@ -12,6 +12,8 @@ import ru.pressstart9.petproject.api_ms.service.util.ExtendedUser;
 import ru.pressstart9.petproject.commons.exceptions.EmailNotUnique;
 import ru.pressstart9.petproject.api_ms.dao.UserInfoRepository;
 import ru.pressstart9.petproject.api_ms.domain.UserInfo;
+
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -46,5 +48,10 @@ public class UserInfoService implements UserDetailsService {
         } catch (NonUniqueResultException e) {
             throw new EmailNotUnique(e.getMessage());
         }
+    }
+
+    public void deleteUserInfo(Long personId) {
+        Optional<UserInfo> userInfo = userInfoRepository.findByPersonId(personId);
+        userInfo.ifPresent(userInfoRepository::delete);
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
+import ru.pressstart9.petproject.api_ms.service.UserInfoService;
 import ru.pressstart9.petproject.api_ms.service.kafka.RequestProducer;
 import ru.pressstart9.petproject.commons.dto.requests.DeleteRequest;
 import ru.pressstart9.petproject.commons.dto.responses.CreatedResponse;
@@ -16,9 +17,12 @@ import ru.pressstart9.petproject.commons.dto.requests.CreatePersonBody;
 @RestController
 @RequestMapping("/people")
 public class PersonController {
+    private final UserInfoService userInfoService;
+
     private final RequestProducer requestProducer;
 
-    public PersonController(RequestProducer requestProducer) {
+    public PersonController(UserInfoService userInfoService, RequestProducer requestProducer) {
+        this.userInfoService = userInfoService;
         this.requestProducer = requestProducer;
     }
 
@@ -39,6 +43,7 @@ public class PersonController {
     @PreAuthorize("@permission.isSelf(#id)")
     public ResponseEntity<Void> deletePerson(@P("id") @PathVariable("id") Long id) {
         requestProducer.sendPersonRequest(new DeleteRequest(id));
+        userInfoService.deleteUserInfo(id);
         return ResponseEntity.noContent().build();
     }
 }

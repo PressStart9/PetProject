@@ -1,7 +1,7 @@
 package ru.pressstart9.petproject.person_ms.service;
 
 import ru.pressstart9.petproject.commons.dto.requests.GetByOwner;
-import ru.pressstart9.petproject.commons.dto.requests.RemovePetOwner;
+import ru.pressstart9.petproject.commons.dto.requests.RemovePetsOwner;
 import ru.pressstart9.petproject.commons.exceptions.EntityNotFound;
 import ru.pressstart9.petproject.person_ms.dao.PersonRepository;
 import ru.pressstart9.petproject.person_ms.domain.Person;
@@ -38,7 +38,7 @@ public class PersonService {
     }
 
     public void deletePersonById(long id) {
-        requestProducer.sendPetRequest(new RemovePetOwner(id));
+        requestProducer.sendPetRequest(new RemovePetsOwner(id));
         personRepository.deleteById(id);
     }
 

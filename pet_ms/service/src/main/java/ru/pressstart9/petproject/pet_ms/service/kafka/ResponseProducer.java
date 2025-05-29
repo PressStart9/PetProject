@@ -30,17 +30,6 @@ public class ResponseProducer {
     }
 
     @KafkaHandler
-    public void consumePersonResponse(@Header(value = KafkaHeaders.REPLY_TOPIC, required = false) String replyTopic, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationId, @Payload RemovePetOwnner data) {
-        try {
-            petService.removePetById(data.ownerId, data.petId);
-
-            reply(replyTopic, correlationId, new BlankResponse());
-        } catch (Exception e) {
-            exceptionallyReply(replyTopic, correlationId, e, new BlankResponse());
-        }
-    }
-
-    @KafkaHandler
     public void consumePersonResponse(@Header(value = KafkaHeaders.REPLY_TOPIC, required = false) String replyTopic, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationId, @Payload AddPetRequest data) {
         try {
             petService.addPetById(data.ownerId, data.petId);
@@ -96,7 +85,7 @@ public class ResponseProducer {
     }
 
     @KafkaHandler
-    public void consumePetResponse(@Header(KafkaHeaders.REPLY_TOPIC) String replyTopic, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationId, @Payload RemoveFriendPair data) {
+    public void consumePetResponse(@Header(value = KafkaHeaders.REPLY_TOPIC, required = false) String replyTopic, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationId, @Payload RemoveFriendPair data) {
         try {
             petService.removeFriend(data.getPetId(), data.getFriendId());
 
@@ -118,7 +107,7 @@ public class ResponseProducer {
     }
 
     @KafkaHandler
-    public void consumePetResponse(@Header(KafkaHeaders.REPLY_TOPIC) String replyTopic, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationId, @Payload RemovePetOwner data) {
+    public void consumePetResponse(@Header(value = KafkaHeaders.REPLY_TOPIC, required = false) String replyTopic, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationId, @Payload RemovePetsOwner data) {
         try {
             petService.removePetOwner(data.getOwnerId());
 

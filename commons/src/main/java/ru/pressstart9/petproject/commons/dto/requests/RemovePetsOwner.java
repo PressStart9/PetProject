@@ -5,9 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class RemovePetOwnner {
+@AllArgsConstructor
+public class RemovePetsOwner {
     public Long ownerId;
-    public Long petId;
 }
