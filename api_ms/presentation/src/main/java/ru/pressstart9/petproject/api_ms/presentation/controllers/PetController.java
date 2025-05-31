@@ -25,7 +25,8 @@ public class PetController {
     }
 
     @PostMapping
-    public ResponseEntity<Long> createPet(@Valid @RequestBody CreatePetBody request) {
+    @PreAuthorize("@permission.isOwnerOfCreated(#request)")
+    public ResponseEntity<Long> createPet(@P("request") @Valid @RequestBody CreatePetBody request) {
         CreatedResponse response = requestProducer.sendPetRequest(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response.getId());
     }

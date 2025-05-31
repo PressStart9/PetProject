@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import ru.pressstart9.petproject.api_ms.service.kafka.RequestProducer;
 import ru.pressstart9.petproject.api_ms.service.util.ExtendedUser;
 import ru.pressstart9.petproject.commons.UserRole;
+import ru.pressstart9.petproject.commons.dto.requests.CreatePetBody;
 import ru.pressstart9.petproject.commons.dto.requests.FriendPairBody;
 import ru.pressstart9.petproject.commons.dto.requests.GetRequest;
 import ru.pressstart9.petproject.commons.dto.requests.RemoveFriendPair;
@@ -48,6 +49,14 @@ public class AuthPermissionChecks {
 
     public boolean isOwnerOfPair(RemoveFriendPair request) {
         return isOwner(request.petId);
+    }
+
+    public boolean isOwnerOfCreated(CreatePetBody request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Boolean check = checkRole(auth);
+        if (check != null) { return check; }
+
+        return Objects.equals(((ExtendedUser) auth.getPrincipal()).getId(), request.ownerId);
     }
 
     private Boolean checkRole(Authentication auth) {
